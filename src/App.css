@@ -1,0 +1,132 @@
+@import "tailwindcss";
+
+/* ================================
+   GLOBAL FONT
+================================ */
+body {
+  font-family: Inter, system-ui, sans-serif;
+}
+
+/* ================================
+   APP COLORS
+================================ */
+:root {
+  --bg-color: #ffffff;
+  --text-color: #374151;
+  --nav-border: #e5e7eb;
+  --nav-bg: #ffffff;
+}
+
+.dark {
+  --bg-color: #06284D;
+  --text-color: #ffffff;
+  --nav-border: rgba(255,255,255,0.1);
+  --nav-bg: #06284D;
+}
+
+/* ================================
+   HERO SECTION COLORS
+================================ */
+:root {
+  --hero-bg: #031f3a;
+  --hero-text: #ffffff;
+  --hero-border: rgba(255, 255, 255, 0.3);
+}
+
+.dark {
+  --hero-bg: #ffffff;
+  --hero-text: #031f3a;
+  --hero-border: rgba(0, 0, 0, 0.15);
+}
+
+/* ================================
+   HERO BUTTON STATES
+================================ */
+:root {
+  --hero-btn-bg: transparent;
+  --hero-btn-text: var(--hero-text);
+
+  --hero-btn-hover-bg: #ffffff;
+  --hero-btn-hover-text: #031f3a;
+}
+
+.dark {
+  --hero-btn-bg: transparent;
+  --hero-btn-text: var(--hero-text);
+
+  --hero-btn-hover-bg: #031f3a;
+  --hero-btn-hover-text: #ffffff;
+}
+
+/* ================================
+  NAVBAR STATES
+================================ */
+:root {
+  --nav-hover-bg: rgba(0, 0, 0, 0.08);
+  --nav-hover-text: #031f3a;
+}
+
+.dark {
+  --nav-hover-bg: rgba(255, 255, 255, 0.12);
+  --nav-hover-text: #ffffff;
+}
+
+/* ================================
+   SYNERGY SECTION COLORS
+================================ */
+:root {
+  --synergy-bg: #ffffff;
+  --synergy-text: #031f3a;
+
+  --synergy-card-bg: #ffffff;
+  --synergy-card-text: #031f3a;
+  --synergy-card-border: rgba(0, 0, 0, 0.1);
+
+  --synergy-card-hover-bg: #031f3a;
+  --synergy-card-hover-text: #ffffff;
+
+  /* NEW: Synergy heading colors */
+  --synergy-heading-main: #000000; /* black in light mode */
+  --synergy-heading-highlight: #2563eb; /* blue in light mode */
+}
+
+.dark {
+  --synergy-bg: #06284d;
+  --synergy-text: rgba(255, 255, 255, 0.85);
+
+  --synergy-card-bg: #ffffff;
+  --synergy-card-text: #031f3a;
+  --synergy-card-border: rgba(0, 0, 0, 0.1);
+
+  --synergy-card-hover-bg: #031f3a;
+  --synergy-card-hover-text: #ffffff;
+
+  /* NEW: Heading colors for dark mode */
+  --synergy-heading-main: #ffffff; /* white in dark mode */
+  --synergy-heading-highlight: #3b82f6; /* brighter blue in dark mode */
+}
+
+/* ================================
+   TEAM SECTION COLORS
+================================ */
+:root {
+  /* Desktop social icon colors */
+  --team-icon-bg: #ffffff;
+  --team-icon-text: #6b7280;
+  --team-icon-border: rgba(0, 0, 0, 0.1);
+  
+  /* Mobile social icon colors */
+  --team-mobile-icon-bg: #ffffff;
+  --team-mobile-icon-text: #031f3a;
+}
+
+.dark {
+  /* Desktop social icon colors - dark mode */
+  --team-icon-bg: rgba(255, 255, 255, 0.1);
+  --team-icon-text: rgba(255, 255, 255, 0.8);
+  --team-icon-border: rgba(255, 255, 255, 0.2);
+  
+  /* Mobile social icon colors - dark mode */
+  --team-mobile-icon-bg: #06284d;
+  --team-mobile-icon-text: #ffffff;
+}

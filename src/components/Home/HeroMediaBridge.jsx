@@ -1,214 +1,375 @@
-import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState, useRef } from "react";
+import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
 import hero1 from "../../assets/hero-1.webp";
 import hero2 from "../../assets/hero-2.webp";
 import hero3 from "../../assets/hero-3.webp";
 import hero4 from "../../assets/hero-4.webp";
 import hero5 from "../../assets/hero-5.webp";
 
-/* ===============================
-   HERO IMAGES
+/* ─── DESIGN CONCEPT ───────────────────────────────────────────────────────────
+   CINEMATIC ARCHITECTURAL SLIDER
 
-   WHY WEBP:
-   WebP is the best format for this use case — 25–35% smaller file
-   size than JPEG/PNG at equivalent visual quality, and supported by
-   all modern browsers. Keep your .webp files as they are.
-================================ */
-const HERO_IMAGES = [hero1, hero2, hero3, hero4, hero5];
-const SLIDE_INTERVAL_MS = 4000;
+   Aesthetic direction: editorial architecture photography — the kind you see
+   in Wallpaper* magazine or Dezeen. Full-bleed images, extreme widescreen crop,
+   film-grain overlay, and a stripped-back control language borrowed from
+   professional photography portfolios.
 
-/* ===============================
-   ANIMATION VARIANTS
+   Key design decisions:
+   1. WIDESCREEN CROP — 21:9 aspect ratio (cinematic) instead of 16:9 (TV).
+      Architecture looks dramatically better in ultra-wide format.
 
-   containerVariants — The entire media frame slides up from y:60
-                       and scales from 95% → 100% on first scroll into view.
-                       delay: 0.2 gives the page layout time to settle first.
+   2. SLIDE TRANSITION — Images don't crossfade. Instead, the next image
+      slides in from the right while the current one moves left, with a
+      subtle scale-up on the incoming image. Feels like turning pages in a
+      portfolio rather than a TV broadcast.
 
-   imageVariants     — Each image enters scaled up (1.1 → 1) while fading in,
-                       and exits scaled down (1 → 0.95) while fading out.
-                       The enter scale-down creates a subtle Ken Burns effect.
+   3. NAVIGATION — No dots. Instead:
+      - Far left: current slide number in large editorial type (01 / 05)
+      - Far right: thin vertical progress bar that fills as slides advance
+      - Bottom: a single thin scrub bar — click anywhere to jump to that slide
+      - Prev / next arrows are minimal chevrons that appear only on hover
 
-   WHY mode="wait" ON AnimatePresence:
-   "wait" means the exit animation fully completes before the next image
-   enters. Without this, both images overlap during transition and the
-   bg-black on the container shows through — causing the black flash.
-   The real fix for the black flash is below (see bg-transparent on the frame).
-================================ */
-const containerVariants = {
-  hidden: { opacity: 0, y: 60, scale: 0.95 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: {
-      duration: 0.8,
-      ease: [0.22, 1, 0.36, 1],
-      delay: 0.2
-    }
-  }
-};
+   4. FILM GRAIN — SVG fractalNoise at low opacity adds tactile depth and
+      elevates the images from "web stock photo" to "editorial quality".
 
-const imageVariants = {
-  enter: {
+   5. PARALLAX — The image moves slightly on mouse position using
+      useMotionValue + useSpring, creating a subtle 3D depth effect.
+
+   6. CAPTION BAR — A slim frosted bar at the bottom shows the slide number
+      and a short label. Fades in with each new slide.
+─────────────────────────────────────────────────────────────────────────────── */
+
+const SLIDES = [
+  { img: hero1, label: "Architecture & Design" },
+  { img: hero2, label: "Construction Excellence" },
+  { img: hero3, label: "Interior Precision" },
+  { img: hero4, label: "Project Delivery" },
+  { img: hero5, label: "Digital Innovation" },
+];
+
+const INTERVAL = 5000;
+
+/* Slide direction: +1 = next (right→left), -1 = prev (left→right) */
+const slideVariants = {
+  enter: (dir) => ({
+    x: dir > 0 ? "100%" : "-100%",
+    scale: 1.08,
     opacity: 0,
-    scale: 1.1,
-  },
+  }),
   center: {
-    opacity: 1,
+    x: 0,
     scale: 1,
+    opacity: 1,
     transition: {
-      opacity: { duration: 0.7 },
-      scale: { duration: 1.2, ease: [0.22, 1, 0.36, 1] }
-    }
+      x: { duration: 0.75, ease: [0.76, 0, 0.24, 1] },
+      scale: { duration: 0.95, ease: [0.22, 1, 0.36, 1] },
+      opacity: { duration: 0.4 },
+    },
   },
-  exit: {
+  exit: (dir) => ({
+    x: dir > 0 ? "-60%" : "60%",
+    scale: 0.96,
     opacity: 0,
-    scale: 0.95,
     transition: {
-      duration: 0.5
-    }
-  }
+      x: { duration: 0.75, ease: [0.76, 0, 0.24, 1] },
+      scale: { duration: 0.75 },
+      opacity: { duration: 0.35 },
+    },
+  }),
 };
 
-/* ===============================
-   HERO MEDIA BRIDGE COMPONENT
+const captionVariants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, delay: 0.35 } },
+  exit:    { opacity: 0, y: -6, transition: { duration: 0.25 } },
+};
 
-   Sits BETWEEN the blue hero section and the white content below.
-   Matches the HeroSection slider aspect ratio (16:9 / aspect-video).
-   Stays centred and responsive via percentage width constraints.
-
-   KEY FIXES APPLIED:
-   1. BLACK FLASH FIX — Changed bg-black → bg-transparent on the frame.
-      The black flash occurs because during crossfade both images are
-      briefly at low opacity, exposing the container background.
-      bg-transparent makes the container invisible when no image covers it,
-      so the section background (bg-transparent on the outer wrapper) shows
-      through instead of a black rectangle.
-
-   2. HOVER TO PAUSE — isPaused state stops the setInterval from advancing
-      the slide index. onMouseEnter sets isPaused true, onMouseLeave resets
-      it to false. The interval is re-created cleanly via the isPaused
-      dependency in the useEffect.
-================================ */
 export default function HeroMediaBridge() {
+  const [index, setIndex]     = useState(0);
+  const [dir, setDir]         = useState(1);     // slide direction
+  const [paused, setPaused]   = useState(false);
+  const [progress, setProgress] = useState(0);   // 0–100 for the scrub bar
+  const intervalRef           = useRef(null);
+  const startRef              = useRef(Date.now());
 
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  /* ── Parallax mouse tracking ── */
+  const rawX = useMotionValue(0);
+  const rawY = useMotionValue(0);
+  const px   = useSpring(rawX, { stiffness: 60, damping: 20 });
+  const py   = useSpring(rawY, { stiffness: 60, damping: 20 });
 
-  /* isPaused — true when the user's cursor is over the image frame.
-     Prevents the interval from advancing slides during hover.        */
-  const [isPaused, setIsPaused] = useState(false);
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const cx   = (e.clientX - rect.left) / rect.width  - 0.5;
+    const cy   = (e.clientY - rect.top)  / rect.height - 0.5;
+    rawX.set(cx * 18);
+    rawY.set(cy * 10);
+  };
+  const resetParallax = () => { rawX.set(0); rawY.set(0); };
 
-  /* AUTO-ADVANCE INTERVAL
-
-     Clears and restarts whenever isPaused changes so the timer
-     always reflects the current pause state cleanly.
-     Cleanup function (return () => clearInterval) prevents memory
-     leaks when the component unmounts.
-  */
+  /* ── Auto-advance + scrub bar ── */
   useEffect(() => {
-    if (isPaused) return; // Do nothing while hovered — interval stays cleared
+    if (paused) { clearInterval(intervalRef.current); return; }
 
-    const intervalId = setInterval(() => {
-      setCurrentImageIndex((i) =>
-        i === HERO_IMAGES.length - 1 ? 0 : i + 1
-      );
-    }, SLIDE_INTERVAL_MS);
+    startRef.current = Date.now();
+    setProgress(0);
 
-    return () => clearInterval(intervalId);
-  }, [isPaused]); // Re-run when pause state changes
+    /* Scrub bar: update every 30ms */
+    const tick = setInterval(() => {
+      const elapsed = Date.now() - startRef.current;
+      setProgress(Math.min((elapsed / INTERVAL) * 100, 100));
+    }, 30);
+
+    intervalRef.current = setInterval(() => {
+      setDir(1);
+      setIndex((i) => (i + 1) % SLIDES.length);
+      startRef.current = Date.now();
+      setProgress(0);
+    }, INTERVAL);
+
+    return () => { clearInterval(tick); clearInterval(intervalRef.current); };
+  }, [paused, index]);
+
+  const goTo = (next) => {
+    setDir(next > index ? 1 : -1);
+    setIndex(next);
+    startRef.current = Date.now();
+    setProgress(0);
+  };
+  const prev = () => goTo((index - 1 + SLIDES.length) % SLIDES.length);
+  const next = () => goTo((index + 1) % SLIDES.length);
 
   return (
-    // Shift image UP slightly using negative margin to overlap the hero section below
     <section className="w-full bg-transparent -mt-20 md:-mt-40 lg:-mt-44">
       <div className="max-w-[1200px] mx-auto px-6">
+        <div className="w-full md:w-[85%] lg:w-[70%] mx-auto">
 
-        {/* Width control — constrains the frame to match HeroSection proportions */}
-        <div className="w-full md:w-[80%] lg:w-[63%] mx-auto">
-
-          {/* MEDIA FRAME
-
-              aspect-[16/9] / aspect-video maintains correct proportions
-              at all screen sizes without fixed pixel heights.
-
-              bg-transparent REPLACES the original bg-black —
-              this is the fix for the black flash during crossfade.
-
-              onMouseEnter/onMouseLeave toggle isPaused to pause/resume
-              the slideshow when the user hovers over the image.
-
-              cursor-pointer signals to the user that the image is interactive.
-          */}
-          <motion.div
-            className="relative aspect-[16/9] md:aspect-video rounded-xl overflow-hidden shadow-2xl bg-transparent"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.3 }}
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-            style={{ cursor: isPaused ? "pause" : "default" }}
+          {/* ── OUTER WRAPPER — position context for all overlaid elements ── */}
+          <div
+            className="relative group"
+            onMouseEnter={() => setPaused(true)}
+            onMouseLeave={() => { setPaused(false); resetParallax(); }}
+            onMouseMove={handleMouseMove}
           >
 
-            {/* CROSSFADE IMAGE SLIDESHOW
+            {/* ── MAIN FRAME ─────────────────────────────────────────────── */}
+            <div
+              className="relative overflow-hidden rounded-2xl shadow-2xl"
+              style={{
+                aspectRatio: "21 / 9",
+                background: "#0a0a0a",
+                /* Architectural: dark border that fades to nothing */
+                boxShadow: "0 0 0 1px rgba(255,255,255,0.06), 0 32px 80px rgba(0,0,0,0.55)",
+              }}
+            >
 
-                AnimatePresence mode="wait" ensures the exiting image
-                fully fades out before the entering image begins — prevents
-                both images overlapping at low opacity simultaneously.
+              {/* Image slideshow */}
+              <AnimatePresence initial={false} custom={dir} mode="sync">
+                <motion.div
+                  key={index}
+                  custom={dir}
+                  variants={slideVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  className="absolute inset-0"
+                  style={{ x: px, y: py }}
+                >
+                  <img
+                    src={SLIDES[index].img}
+                    alt={SLIDES[index].label}
+                    className="w-full h-full object-cover"
+                    draggable={false}
+                  />
+                  {/* Subtle vignette so edges don't blow out */}
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      background:
+                        "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.45) 100%)",
+                    }}
+                  />
+                </motion.div>
+              </AnimatePresence>
 
-                key={currentImageIndex} tells Framer Motion this is a
-                different element each time the index changes, triggering
-                the full enter/exit animation cycle.
-            */}
-            <AnimatePresence mode="wait">
-              <motion.img
-                key={currentImageIndex}
-                src={HERO_IMAGES[currentImageIndex]}
-                alt={`Hero visual ${currentImageIndex + 1} of ${HERO_IMAGES.length}`}
-                loading="lazy"
-                className="absolute inset-0 w-full h-full object-cover"
-                variants={imageVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
+              {/* Film grain overlay — SVG fractalNoise */}
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 pointer-events-none z-10 opacity-[0.045] mix-blend-overlay"
+                style={{
+                  backgroundImage:
+                    "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+                  backgroundSize: "180px",
+                }}
               />
-            </AnimatePresence>
 
-            {/* PAUSE INDICATOR OVERLAY
-
-                Shown only when isPaused is true (user is hovering).
-                Subtle pill badge in the top-right corner confirms to
-                the user that the slideshow is paused — clear feedback
-                without being visually intrusive.
-            */}
-            {isPaused && (
-              <div className="absolute top-3 right-3 z-10 bg-black/40 backdrop-blur-sm text-white text-xs font-medium px-3 py-1 rounded-full">
-                ⏸ Paused
+              {/* ── SLIDE COUNT — top left, editorial large type ── */}
+              <div className="absolute top-4 left-5 z-20 pointer-events-none">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0, transition: { duration: 0.4 } }}
+                    exit={{ opacity: 0, y: 8, transition: { duration: 0.2 } }}
+                    className="flex items-end gap-1"
+                  >
+                    <span
+                      className="font-black leading-none tracking-tighter text-white"
+                      style={{ fontSize: "clamp(1.4rem, 3.5vw, 2.2rem)", fontFamily: "'Syne', sans-serif" }}
+                    >
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <span
+                      className="font-mono text-white/40 mb-1"
+                      style={{ fontSize: "clamp(0.55rem, 1.2vw, 0.7rem)" }}
+                    >
+                      / {String(SLIDES.length).padStart(2, "0")}
+                    </span>
+                  </motion.div>
+                </AnimatePresence>
               </div>
-            )}
 
-            {/* SLIDE INDICATOR DOTS
+              {/* ── VERTICAL PROGRESS BAR — top right ── */}
+              <div
+                className="absolute top-4 right-5 z-20 flex flex-col gap-1"
+                style={{ height: "clamp(40px, 8vw, 64px)", width: "2px" }}
+              >
+                {SLIDES.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => goTo(i)}
+                    aria-label={`Go to slide ${i + 1}`}
+                    className="flex-1 rounded-full overflow-hidden cursor-pointer"
+                    style={{ background: "rgba(255,255,255,0.15)" }}
+                  >
+                    {i === index && (
+                      <motion.div
+                        className="w-full rounded-full"
+                        style={{ background: "#fff", height: `${progress}%` }}
+                      />
+                    )}
+                    {i < index && (
+                      <div className="w-full h-full rounded-full" style={{ background: "rgba(255,255,255,0.6)" }} />
+                    )}
+                  </button>
+                ))}
+              </div>
 
-                Shows which image is currently active.
-                Positioned at the bottom-centre of the frame.
-                Active dot is fully opaque; inactive dots are dimmed.
-            */}
-            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex gap-2">
-              {HERO_IMAGES.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentImageIndex(i)}
-                  aria-label={`Go to slide ${i + 1}`}
-                  className="w-2 h-2 rounded-full transition-all duration-300"
-                  style={{
-                    backgroundColor: "white",
-                    opacity: i === currentImageIndex ? 1 : 0.4,
-                    transform: i === currentImageIndex ? "scale(1.3)" : "scale(1)",
-                  }}
-                />
-              ))}
+              {/* ── CAPTION BAR — bottom frosted strip ── */}
+              <div
+                className="absolute bottom-0 left-0 right-0 z-20 px-5 py-3 flex items-center justify-between"
+                style={{
+                  background: "linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 100%)",
+                  backdropFilter: "blur(0px)",
+                }}
+              >
+                <AnimatePresence mode="wait">
+                  <motion.p
+                    key={index}
+                    variants={captionVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                    className="font-mono text-white/70 uppercase tracking-[0.2em]"
+                    style={{ fontSize: "clamp(0.55rem, 1.1vw, 0.68rem)" }}
+                  >
+                    {SLIDES[index].label}
+                  </motion.p>
+                </AnimatePresence>
+
+                {/* Pause indicator */}
+                {paused && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="font-mono text-white/40 uppercase tracking-widest"
+                    style={{ fontSize: "0.55rem" }}
+                  >
+                    ⏸ PAUSED
+                  </motion.div>
+                )}
+              </div>
+
+              {/* ── PREV / NEXT ARROWS — appear on hover ── */}
+              <motion.button
+                onClick={prev}
+                aria-label="Previous slide"
+                className="absolute left-3 top-1/2 -translate-y-1/2 z-30 flex items-center justify-center rounded-full text-white transition-all"
+                style={{
+                  width: "clamp(28px, 4vw, 40px)",
+                  height: "clamp(28px, 4vw, 40px)",
+                  background: "rgba(0,0,0,0.35)",
+                  border: "1px solid rgba(255,255,255,0.12)",
+                  backdropFilter: "blur(8px)",
+                }}
+                initial={{ opacity: 0, x: -6 }}
+                whileInView={{ opacity: 0 }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.92 }}
+                animate={{ opacity: 0 }}
+                /* Show via CSS group-hover on the outer wrapper */
+              >
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M9 2L4 7L9 12" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </motion.button>
+
+              <motion.button
+                onClick={next}
+                aria-label="Next slide"
+                className="absolute right-3 top-1/2 -translate-y-1/2 z-30 flex items-center justify-center rounded-full text-white"
+                style={{
+                  width: "clamp(28px, 4vw, 40px)",
+                  height: "clamp(28px, 4vw, 40px)",
+                  background: "rgba(0,0,0,0.35)",
+                  border: "1px solid rgba(255,255,255,0.12)",
+                  backdropFilter: "blur(8px)",
+                }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.92 }}
+              >
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M5 2L10 7L5 12" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </motion.button>
+
             </div>
 
-          </motion.div>
+            {/* ── SCRUB BAR — below the frame ── */}
+            <div
+              className="relative mt-3 h-[2px] rounded-full overflow-hidden cursor-pointer"
+              style={{ background: "rgba(0,0,0,0.1)" }}
+              onClick={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const pct  = (e.clientX - rect.left) / rect.width;
+                goTo(Math.floor(pct * SLIDES.length));
+              }}
+            >
+              {/* Filled segment */}
+              <motion.div
+                className="absolute left-0 top-0 h-full rounded-full"
+                style={{
+                  background: "var(--synergy-heading-highlight, #2563eb)",
+                  width: `${((index) / SLIDES.length) * 100 + (progress / SLIDES.length)}%`,
+                }}
+              />
+              {/* Tick marks */}
+              <div className="absolute inset-0 flex">
+                {SLIDES.map((_, i) => (
+                  <div key={i} className="flex-1 relative">
+                    {i > 0 && (
+                      <div
+                        className="absolute left-0 top-1/2 -translate-y-1/2 w-px h-2 -translate-x-1/2"
+                        style={{ background: "rgba(255,255,255,0.4)" }}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
         </div>
       </div>
     </section>

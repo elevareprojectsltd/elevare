@@ -217,7 +217,7 @@ export default function Footer({ darkMode }) {
             <h4 className="font-semibold mb-4">Legal</h4>
             <ul className="space-y-3 text-sm opacity-80">
               <li>
-                <Link to="/terms" className="hover:opacity-100 transition">
+                <Link to="/privacy" className="hover:opacity-100 transition">
                   Terms & Conditions
                 </Link>
               </li>

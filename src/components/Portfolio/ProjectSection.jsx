@@ -1,32 +1,59 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import { FiX, FiChevronLeft, FiChevronRight, FiMapPin, FiCalendar } from "react-icons/fi";
+import { FiX, FiMapPin, FiCalendar, FiChevronLeft, FiChevronRight } from "react-icons/fi";
+
+/* ===============================
+   REAL IMAGE IMPORTS
+   Each variable name is unique — no duplicates allowed in JS.
+
+   Mapping:
+   A  = Club Concierge Office Fit-out  → A1, A2
+   B  = Ifx Residence Renovation       → NO images yet (Pexels fallback)
+   C  = Zinari Apartments              → C1, C2, C3
+   D  = Hopewell Towers                → D1, D2, D3, D4, D5, D6
+   E  = Zinari / Ligali Towers         → E1, E2, E3, E4, E5, E6, E7
+   F  = Casem Cathedral                → F1, F2
+   G  = Club Concierge / KADO's        → G1–G11
+================================ */
+
+// ── Hopewell Towers (D) ──
+import D1 from "../../assets/D1.webp";
+import D2 from "../../assets/D2.webp";
+import D3 from "../../assets/D3.webp";
+import D4 from "../../assets/D4.webp";
+import D5 from "../../assets/D5.webp";
+import D6 from "../../assets/D6.webp";
+
+// ── Zinari Apartments / Ligali Towers (E) ──
+import E1 from "../../assets/E1.webp";
+import E2 from "../../assets/E2.webp";
+import E3 from "../../assets/E3.webp";
+import E4 from "../../assets/E4.webp";
+import E5 from "../../assets/E5.webp";
+import E6 from "../../assets/E6.webp";
+import E7 from "../../assets/E7.webp";
+
+// ── Casem Cathedral (F) ──
+import F1 from "../../assets/F1.webp";
+import F2 from "../../assets/F2.webp";
+
+// ── Club Concierge / KADO's Factory (G) — 11 images ──
+import G1 from "../../assets/G1.webp";
+import G2 from "../../assets/G2.webp";
+import G3 from "../../assets/G3.webp";
+import G4 from "../../assets/G4.webp";
+import G5 from "../../assets/G5.webp";
+import G6 from "../../assets/G6.webp";
+import G7 from "../../assets/G7.webp";
+import G8 from "../../assets/G8.webp";
+import G9 from "../../assets/G9.webp";
+import G10 from "../../assets/G10.webp";
+import G11 from "../../assets/G11.webp";
 
 /* ===============================
    PROJECTS DATA
-
-   Purpose: Single source of truth for all construction portfolio entries.
-   Each object maps directly to a <ProjectCard /> in the grid and
-   populates the <GalleryModal /> when the card is clicked.
-
-   Fields:
-   - id          : Unique identifier used as the React key on each card
-   - name        : Project name — shown as the card heading and modal title
-   - location    : City and state — displayed with a FiMapPin icon
-   - year        : Completion year — displayed with a FiCalendar icon
-   - category    : Project type — shown as a frosted badge on the card image
-   - scope       : Elevare's role — shown below the title on card and in modal
-   - description : Full project summary — truncated to 3 lines on the card
-                   (line-clamp-3), full text shown in the modal detail panel
-   - highlights  : Bullet points shown only in the modal — not on the card
-   - images      : Array of Pexels URLs. Replace with real project photography
-                   when available. First image is shown by default on the card.
-                   ?auto=compress&cs=tinysrgb&w=800 keeps file sizes small
-                   without visible quality loss — important for PageSpeed score.
-
-   HOW TO ADD A NEW PROJECT:
-   Copy any object below, update all fields, and add it to the array.
-   The grid, modal, and image carousel all update automatically.
+   images[0]    = BEFORE (Pexels placeholder until real photos exist)
+   images[1..n] = AFTER  (real .webp assets)
 ================================ */
 const PROJECTS = [
   {
@@ -48,9 +75,17 @@ const PROJECTS = [
     ],
     images: [
       "https://images.pexels.com/photos/1080721/pexels-photo-1080721.jpeg?auto=compress&cs=tinysrgb&w=800",
-      "https://images.pexels.com/photos/2883049/pexels-photo-2883049.jpeg?auto=compress&cs=tinysrgb&w=800",
-      "https://images.pexels.com/photos/1181406/pexels-photo-1181406.jpeg?auto=compress&cs=tinysrgb&w=800",
-      "https://images.pexels.com/photos/1181248/pexels-photo-1181248.jpeg?auto=compress&cs=tinysrgb&w=800",
+      G1,
+      G2,
+      G3,
+      G4,
+      G5,
+      G6,
+      G7,
+      G8,
+      G9,
+      G10,
+      G11,
     ],
   },
   {
@@ -71,6 +106,7 @@ const PROJECTS = [
       "Contemporary, cozy, and efficient home",
     ],
     images: [
+      /* TODO: replace all with real B*.webp imports once photos are added to assets */
       "https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=800",
       "https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg?auto=compress&cs=tinysrgb&w=800",
       "https://images.pexels.com/photos/2724749/pexels-photo-2724749.jpeg?auto=compress&cs=tinysrgb&w=800",
@@ -96,9 +132,7 @@ const PROJECTS = [
     ],
     images: [
       "https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=800",
-      "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=800",
-      "https://images.pexels.com/photos/259588/pexels-photo-259588.jpeg?auto=compress&cs=tinysrgb&w=800",
-      "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=800",
+      E1, E2, E3, E4, E5, E6, E7,
     ],
   },
   {
@@ -120,9 +154,7 @@ const PROJECTS = [
     ],
     images: [
       "https://images.pexels.com/photos/380768/pexels-photo-380768.jpeg?auto=compress&cs=tinysrgb&w=800",
-      "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=800",
-      "https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=800",
-      "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=800",
+      D1, D2, D3, D4, D5, D6,
     ],
   },
   {
@@ -144,9 +176,7 @@ const PROJECTS = [
     ],
     images: [
       "https://images.pexels.com/photos/189296/pexels-photo-189296.jpeg?auto=compress&cs=tinysrgb&w=800",
-      "https://images.pexels.com/photos/1134176/pexels-photo-1134176.jpeg?auto=compress&cs=tinysrgb&w=800",
-      "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=800",
-      "https://images.pexels.com/photos/261102/pexels-photo-261102.jpeg?auto=compress&cs=tinysrgb&w=800",
+      E1, E2, E3, E4,
     ],
   },
   {
@@ -168,221 +198,250 @@ const PROJECTS = [
     ],
     images: [
       "https://images.pexels.com/photos/208277/pexels-photo-208277.jpeg?auto=compress&cs=tinysrgb&w=800",
-      "https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=800",
-      "https://images.pexels.com/photos/259588/pexels-photo-259588.jpeg?auto=compress&cs=tinysrgb&w=800",
-      "https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg?auto=compress&cs=tinysrgb&w=800",
+      F1, F2,
     ],
   },
 ];
 
 /* ===============================
    ANIMATION VARIANTS
-
-   Purpose: Define reusable animation patterns for Framer Motion.
-   These create smooth entrance effects without causing layout shifts
-   by only animating transform and opacity properties.
-
-   fadeUp         — Card and header entrance: slides up 30px while fading in.
-                    Used on the section header block and each ProjectCard
-                    via the staggerContainer parent.
-   staggerContainer — Grid wrapper that sequences all ProjectCard entrances.
-                    staggerChildren: 0.1 cascades cards left → right.
-                    delayChildren: 0.1 lets the header finish first.
-   modalVariant   — GalleryModal scales from 95% → 100% on open.
-                    exit reverses this on close. duration: 0.2 on exit
-                    is faster than enter (0.3) so closing feels snappy.
 ================================ */
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: "easeOut" },
-  },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
 };
 
 const staggerContainer = {
   hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1, delayChildren: 0.1 },
-  },
+  visible: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
 };
 
 const modalVariant = {
-  hidden: { opacity: 0, scale: 0.95 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: { duration: 0.3, ease: "easeOut" },
-  },
-  exit: {
-    opacity: 0,
-    scale: 0.95,
-    transition: { duration: 0.2 }, // Faster exit so closing feels snappy
-  },
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" } },
+  exit: { opacity: 0, y: 20, transition: { duration: 0.2 } },
+};
+
+const imageSwap = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.3 } },
+  exit: { opacity: 0, transition: { duration: 0.15 } },
 };
 
 /* ===============================
-   PROJECT CARD COMPONENT
-
-   Renders a single project as a clickable card. Clicking anywhere
-   on the card calls onClick(project) which sets selectedProject in
-   the parent — triggering the GalleryModal to open.
-
-   WHY group CLASS:
-   Enables group-hover: on child elements (image scale, arrow opacity,
-   title colour) without JS state — pure CSS hover from parent to children.
-
-   IMAGE CAROUSEL:
-   Each card has its own currentImageIndex state so multiple cards can
-   be browsed simultaneously without affecting each other.
-   e.stopPropagation() on the arrow buttons prevents the card's onClick
-   from firing when the user clicks a navigation arrow.
+   BEFORE / AFTER TAB VIEWER
 ================================ */
-function ProjectCard({ project, onClick }) {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+function BeforeAfterTabs({ images, compact = false }) {
+  const [active, setActive]         = useState("before");
+  const [afterIndex, setAfterIndex] = useState(0);
 
-  /* IMAGE NAVIGATION
-     e.stopPropagation() prevents the card's onClick (which opens the
-     modal) from firing when the user clicks prev/next arrows.         */
-  const nextImage = (e) => {
+  const afterImages  = images.slice(1);
+  const currentImage = active === "before" ? images[0] : afterImages[afterIndex];
+
+  const prevAfter = (e) => {
     e.stopPropagation();
-    setCurrentImageIndex((prev) => (prev + 1) % project.images.length);
+    setAfterIndex((p) => (p - 1 + afterImages.length) % afterImages.length);
+  };
+  const nextAfter = (e) => {
+    e.stopPropagation();
+    setAfterIndex((p) => (p + 1) % afterImages.length);
+  };
+  const switchTab = (tab, e) => {
+    e.stopPropagation();
+    setActive(tab);
+    setAfterIndex(0);
   };
 
-  const prevImage = (e) => {
-    e.stopPropagation();
-    setCurrentImageIndex(
-      (prev) => (prev - 1 + project.images.length) % project.images.length
-    );
-  };
+  const tabPad  = compact ? "text-[10px] px-3 py-1" : "text-xs px-5 py-1.5";
+  const dotSize = compact ? "w-[5px] h-[5px]"        : "w-[6px] h-[6px]";
 
   return (
-    <motion.div
-      variants={fadeUp}
-      whileHover={{ y: -6 }}
-      transition={{ duration: 0.3 }}
-      onClick={() => onClick(project)}
-      className="group relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer"
-      style={{
-        backgroundColor: "var(--synergy-bg)",
-        border: "2px solid var(--synergy-card-border)",
-      }}
-    >
+    <div className="relative w-full h-full flex flex-col">
+      {/* PILL TAB BAR */}
+      <div
+        className="absolute top-3 left-1/2 -translate-x-1/2 z-10 flex rounded-full"
+        style={{
+          background: "var(--synergy-card-bg)",
+          border:     "1px solid var(--synergy-card-border)",
+          padding:    "3px",
+          gap:        "2px",
+          boxShadow:  "0 2px 12px rgba(0,0,0,0.25)",
+        }}
+      >
+        {["before", "after"].map((tab) => {
+          const isActive = active === tab;
+          return (
+            <button
+              key={tab}
+              onClick={(e) => switchTab(tab, e)}
+              className={`flex items-center gap-1.5 font-bold tracking-widest uppercase transition-all duration-300 rounded-full ${tabPad}`}
+              style={{
+                color:      isActive ? "#fff" : "var(--synergy-text)",
+                background: isActive ? "var(--synergy-heading-highlight)" : "transparent",
+                opacity:    isActive ? 1 : 0.6,
+                boxShadow:  isActive ? "0 0 12px rgba(37,99,235,0.35)" : "none",
+              }}
+            >
+              {isActive && (
+                <span
+                  className={`inline-block rounded-full flex-shrink-0 ${dotSize}`}
+                  style={{ background: "#fff", boxShadow: "0 0 5px #fff" }}
+                />
+              )}
+              {tab}
+            </button>
+          );
+        })}
+      </div>
 
-      {/* IMAGE CAROUSEL AREA */}
-      <div className="relative h-64 overflow-hidden">
+      {/* IMAGE AREA */}
+      <div className="relative flex-1 overflow-hidden">
+        <AnimatePresence mode="wait">
+          <motion.img
+            key={`${active}-${afterIndex}`}
+            src={currentImage}
+            alt={active === "before" ? "Before" : `After ${afterIndex + 1}`}
+            variants={imageSwap}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            draggable={false}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        </AnimatePresence>
 
-        {/* PROJECT IMAGE
-            group-hover:scale-105 zooms the image subtly on card hover
-            — a Ken Burns effect that signals interactivity.
-        */}
-        <img
-          src={project.images[currentImageIndex]}
-          alt={project.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-        />
-
-        {/* GRADIENT OVERLAY
-            from-black/70 at the bottom keeps the category badge and
-            counter readable regardless of the image's own colours.
-        */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-
-        {/* IMAGE NAVIGATION ARROWS
-            Only rendered when there are multiple images.
-            opacity-0 by default, fade in on group-hover so they
-            don't clutter the default card state.
-        */}
-        {project.images.length > 1 && (
+        {/* Prev / Next arrows — After tab only, >1 image */}
+        {active === "after" && afterImages.length > 1 && (
           <>
             <button
-              onClick={prevImage}
-              className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white/30"
+              onClick={prevAfter}
+              className="absolute left-2 top-1/2 -translate-y-1/2 flex items-center justify-center rounded-full text-white transition-all duration-200 hover:scale-110"
+              style={{
+                width: compact ? "28px" : "36px", height: compact ? "28px" : "36px",
+                background: "rgba(0,0,0,0.45)", backdropFilter: "blur(6px)",
+                border: "1px solid rgba(255,255,255,0.15)",
+              }}
             >
-              <FiChevronLeft className="text-white" size={18} />
+              <FiChevronLeft size={compact ? 14 : 18} />
             </button>
             <button
-              onClick={nextImage}
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white/30"
+              onClick={nextAfter}
+              className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center rounded-full text-white transition-all duration-200 hover:scale-110"
+              style={{
+                width: compact ? "28px" : "36px", height: compact ? "28px" : "36px",
+                background: "rgba(0,0,0,0.45)", backdropFilter: "blur(6px)",
+                border: "1px solid rgba(255,255,255,0.15)",
+              }}
             >
-              <FiChevronRight className="text-white" size={18} />
+              <FiChevronRight size={compact ? 14 : 18} />
             </button>
           </>
         )}
 
-        {/* IMAGE COUNTER — "1 / 4" style position indicator */}
-        <div className="absolute bottom-3 right-3 px-2 py-1 rounded-full bg-black/50 backdrop-blur-sm text-xs text-white">
-          {currentImageIndex + 1} / {project.images.length}
-        </div>
-
-        {/* CATEGORY BADGE
-            Uses inline backdropFilter for frosted glass — Tailwind's
-            backdrop-blur requires a wrapper div, so inline style is cleaner.
-        */}
-        <div className="absolute top-3 left-3">
+        {/* Bottom-left label + counter */}
+        <div className="absolute bottom-3 left-3 z-10 pointer-events-none flex items-center gap-2">
           <span
-            className="text-xs font-bold px-3 py-1 rounded-full text-white"
+            className={`font-black tracking-[0.18em] uppercase ${compact ? "text-[9px] px-2 py-0.5" : "text-[10px] px-3 py-1"}`}
             style={{
-              backgroundColor: "rgba(37, 99, 235, 0.85)",
-              backdropFilter: "blur(8px)",
+              background: active === "after" ? "var(--synergy-heading-highlight)" : "rgba(0,0,0,0.6)",
+              color: "#fff", borderRadius: "5px", backdropFilter: "blur(4px)",
+            }}
+          >
+            {active}
+          </span>
+          {active === "after" && afterImages.length > 1 && (
+            <span
+              className={`font-mono font-bold ${compact ? "text-[9px] px-2 py-0.5" : "text-[10px] px-2 py-0.5"}`}
+              style={{
+                background: "rgba(0,0,0,0.55)", color: "rgba(255,255,255,0.85)",
+                borderRadius: "5px", backdropFilter: "blur(4px)",
+              }}
+            >
+              {afterIndex + 1} / {afterImages.length}
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ===============================
+   PROJECT CARD
+================================ */
+function ProjectCard({ project, index, onClick }) {
+  return (
+    <motion.div
+      variants={fadeUp}
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.25 }}
+      onClick={() => onClick(project)}
+      className="group relative flex flex-col rounded-2xl overflow-hidden cursor-pointer"
+      style={{
+        background: "var(--synergy-card-bg)",
+        border:     "1px solid var(--synergy-card-border)",
+        boxShadow:  "0 2px 20px rgba(0,0,0,0.06)",
+        transition: "box-shadow 0.3s, border-color 0.3s",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = "var(--synergy-heading-highlight)";
+        e.currentTarget.style.boxShadow   = "0 0 0 1px var(--synergy-heading-highlight), 0 8px 40px rgba(37,99,235,0.15)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = "var(--synergy-card-border)";
+        e.currentTarget.style.boxShadow   = "0 2px 20px rgba(0,0,0,0.06)";
+      }}
+    >
+      <div className="relative h-56 overflow-hidden" onClick={(e) => e.stopPropagation()}>
+        <BeforeAfterTabs images={project.images} compact={true} />
+        <div
+          className="absolute top-3 right-3 z-10 font-mono font-bold text-xs pointer-events-none"
+          style={{
+            background: "var(--synergy-card-bg)", color: "var(--synergy-card-text)",
+            border: "1px solid var(--synergy-card-border)", borderRadius: "6px",
+            padding: "2px 8px", opacity: 0.9,
+          }}
+        >
+          {String(index + 1).padStart(2, "0")}
+        </div>
+      </div>
+
+      <div className="flex flex-col flex-1 p-5" onClick={() => onClick(project)}>
+        <div className="mb-3">
+          <span
+            className="font-mono text-[10px] font-semibold tracking-widest uppercase px-2 py-1 rounded"
+            style={{
+              background: "rgba(37,99,235,0.08)", color: "var(--synergy-heading-highlight)",
+              border: "1px dashed rgba(37,99,235,0.35)",
             }}
           >
             {project.category}
           </span>
         </div>
-      </div>
-
-      {/* CARD CONTENT */}
-      <div className="p-5">
-
-        {/* META ROW — location + year with icons */}
-        <div className="flex items-center gap-3 mb-3 text-xs opacity-60" style={{ color: "var(--synergy-text)" }}>
-          <div className="flex items-center gap-1">
-            <FiMapPin size={12} />
-            <span>{project.location}</span>
-          </div>
-          <span>·</span>
-          <div className="flex items-center gap-1">
-            <FiCalendar size={12} />
-            <span>{project.year}</span>
-          </div>
-        </div>
-
-        {/* PROJECT TITLE
-            group-hover:text-blue-600 changes colour on card hover
-            to reinforce that the whole card is a clickable element.
-        */}
         <h3
-          className="text-xl font-bold mb-2 group-hover:text-blue-600 transition-colors duration-300"
-          style={{ color: "var(--synergy-heading-main)" }}
+          className="text-lg font-bold leading-snug mb-1 transition-colors duration-200 group-hover:text-blue-600"
+          style={{ color: "var(--synergy-card-text)" }}
         >
           {project.name}
         </h3>
-
-        {/* SCOPE — Elevare's role on this project */}
-        <p className="text-sm mb-3 opacity-60" style={{ color: "var(--synergy-text)" }}>
+        <p className="text-xs mb-3 font-medium" style={{ color: "var(--synergy-card-text)", opacity: 0.5 }}>
           {project.scope}
         </p>
-
-        {/* DESCRIPTION PREVIEW
-            line-clamp-3 truncates to 3 lines with an ellipsis.
-            Full description is visible in the modal detail panel.
-        */}
-        <p
-          className="text-sm leading-relaxed line-clamp-3 opacity-75"
-          style={{ color: "var(--synergy-text)" }}
-        >
+        <p className="text-sm leading-relaxed line-clamp-3 flex-1" style={{ color: "var(--synergy-card-text)", opacity: 0.7 }}>
           {project.description}
         </p>
-
-        {/* VIEW GALLERY CTA
-            Text-only — the entire card is already a click target.
-            Uses the brand highlight colour to draw the eye downward.
-        */}
-        <div className="mt-4 text-sm font-semibold" style={{ color: "var(--synergy-heading-highlight)" }}>
-          View Gallery →
+        <div className="mt-4 pt-4 flex items-center justify-between" style={{ borderTop: "1px solid var(--synergy-card-border)" }}>
+          <div className="flex items-center gap-3 text-xs" style={{ color: "var(--synergy-card-text)", opacity: 0.5 }}>
+            <span className="flex items-center gap-1"><FiMapPin size={11} />{project.location}</span>
+            <span>·</span>
+            <span className="flex items-center gap-1"><FiCalendar size={11} />{project.year}</span>
+          </div>
+          <span
+            className="text-xs font-bold tracking-wide opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+            style={{ color: "var(--synergy-heading-highlight)" }}
+          >
+            Open →
+          </span>
         </div>
       </div>
     </motion.div>
@@ -390,197 +449,119 @@ function ProjectCard({ project, onClick }) {
 }
 
 /* ===============================
-   GALLERY MODAL COMPONENT
-
-   Full-screen lightbox triggered when a ProjectCard is clicked.
-   Displays the full project details alongside a navigable image gallery.
-
-   LAYOUT:
-   - Left panel  : Image gallery with prev/next arrows, dot thumbnails,
-                   and an image counter
-   - Right panel : Full project details — category, title, meta, scope,
-                   description, and key highlights bullet list
-
-   CLOSE BEHAVIOUR:
-   - Clicking the modal backdrop (the outer motion.div) calls onClose
-   - Clicking the × button calls onClose
-   - e.stopPropagation() on the inner content div prevents backdrop
-     clicks from firing when the user interacts inside the modal
-
-   DOT THUMBNAILS:
-   Active dot stretches to w-8 (pill shape) for clear visual feedback.
-   Clicking any dot jumps directly to that image index.
-
-   SCROLL:
-   overflow-y-auto on the right panel allows long highlight lists to
-   scroll within the modal without the modal itself overflowing.
+   GALLERY MODAL
 ================================ */
 function GalleryModal({ project, onClose }) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  const nextImage = () => {
-    setCurrentIndex((prev) => (prev + 1) % project.images.length);
-  };
-
-  const prevImage = () => {
-    setCurrentIndex((prev) => (prev - 1 + project.images.length) % project.images.length);
-  };
-
   return (
     <motion.div
       variants={modalVariant}
       initial="hidden"
       animate="visible"
       exit="exit"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      onClick={onClose} // Clicking the backdrop closes the modal
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center p-3"
     >
+      {/* backdrop */}
+      <div className="absolute inset-0 bg-black/85 backdrop-blur-md" />
 
-      {/* BACKDROP — dark overlay with blur so page content recedes */}
-      <div className="absolute inset-0 bg-black/90 backdrop-blur-sm" />
-
-      {/* MODAL CONTENT
-          e.stopPropagation() prevents backdrop clicks from firing
-          when the user clicks anywhere inside the modal panel.
-          max-h-[90vh] keeps the modal within the viewport on short screens.
-      */}
+      {/* SHELL */}
       <div
         onClick={(e) => e.stopPropagation()}
-        className="relative z-10 w-full max-w-6xl max-h-[90vh] rounded-3xl overflow-hidden"
-        style={{ backgroundColor: "var(--synergy-bg)" }}
+        className="relative z-10 w-full max-w-7xl h-[92vh] rounded-2xl overflow-hidden flex flex-col"
+        style={{
+          background: "var(--synergy-bg)",
+          border: "1px solid var(--synergy-card-border)",
+          boxShadow: "0 0 0 1px rgba(37,99,235,0.2), 0 40px 80px rgba(0,0,0,0.5)",
+        }}
       >
-
-        {/* CLOSE BUTTON — always visible in the top-right corner */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors duration-300"
+        {/* HEADER */}
+        <div
+          className="flex items-center justify-between px-5 py-3 flex-shrink-0"
+          style={{ borderBottom: "1px solid var(--synergy-card-border)", background: "var(--synergy-card-bg)" }}
         >
-          <FiX className="text-white" size={24} />
-        </button>
-
-        {/* MODAL GRID — single column on mobile, 50/50 split on desktop */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
-
-          {/* LEFT PANEL — IMAGE GALLERY */}
-          <div className="relative h-96 lg:h-auto bg-black">
-
-            {/* ACTIVE IMAGE */}
-            <img
-              src={project.images[currentIndex]}
-              alt={project.name}
-              className="w-full h-full object-cover"
-            />
-
-            {/* PREV / NEXT ARROWS */}
-            <button
-              onClick={prevImage}
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-colors duration-300"
-            >
-              <FiChevronLeft className="text-white" size={24} />
-            </button>
-            <button
-              onClick={nextImage}
-              className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-colors duration-300"
-            >
-              <FiChevronRight className="text-white" size={24} />
-            </button>
-
-            {/* IMAGE COUNTER */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full bg-black/70 backdrop-blur-sm text-sm text-white">
-              {currentIndex + 1} / {project.images.length}
+          <div className="flex items-center gap-3">
+            <div className="flex gap-1.5">
+              <span className="w-3 h-3 rounded-full bg-red-400 opacity-80" />
+              <span className="w-3 h-3 rounded-full bg-yellow-400 opacity-80" />
+              <span className="w-3 h-3 rounded-full bg-green-400 opacity-80" />
             </div>
+            <span
+              className="font-mono text-xs pl-3 opacity-50"
+              style={{ color: "var(--synergy-text)", borderLeft: "1px solid var(--synergy-card-border)" }}
+            >
+              {project.category} / {project.name}
+            </span>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200 hover:bg-red-500/15"
+            style={{ background: "rgba(128,128,128,0.1)", color: "var(--synergy-text)" }}
+          >
+            <FiX size={16} />
+          </button>
+        </div>
 
-            {/* DOT THUMBNAILS
-                Active dot stretches to w-8 (pill) for clear visual feedback.
-                Clicking any dot jumps directly to that image index.
-            */}
-            <div className="absolute bottom-16 left-0 right-0 flex justify-center gap-2 px-4">
-              {project.images.map((img, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setCurrentIndex(idx)}
-                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                    idx === currentIndex ? "bg-white w-8" : "bg-white/50"
-                  }`}
-                />
-              ))}
+        {/* BODY — stacked on mobile, side-by-side on desktop */}
+        <div className="flex flex-col lg:flex-row flex-1 min-h-0 overflow-hidden lg:overflow-hidden">
+
+          {/* IMAGE PANEL */}
+          <div
+            className="h-[55vw] max-h-[300px] lg:h-auto lg:max-h-none w-full lg:w-[62%] flex-shrink-0 flex flex-col bg-black border-b border-b-white/10 lg:border-b-0 lg:border-r lg:border-r-white/10"
+            
+          >
+            <div className="relative flex-1 overflow-hidden min-h-0">
+              <BeforeAfterTabs images={project.images} compact={false} />
+            </div>
+            <div
+              className="flex items-center justify-center gap-2 py-2 flex-shrink-0"
+              style={{ background: "var(--synergy-card-bg)", borderTop: "1px solid var(--synergy-card-border)" }}
+            >
+              <span className="font-mono text-[10px] font-semibold tracking-widest opacity-40" style={{ color: "var(--synergy-text)" }}>
+                1 BEFORE · {project.images.length - 1} AFTER
+              </span>
+              <span className="w-1 h-1 rounded-full" style={{ background: "var(--synergy-heading-highlight)" }} />
+              <span className="font-mono text-[10px] font-semibold tracking-widest opacity-70" style={{ color: "var(--synergy-heading-highlight)" }}>
+                USE ARROWS TO BROWSE
+              </span>
             </div>
           </div>
 
-          {/* RIGHT PANEL — PROJECT DETAILS
-              overflow-y-auto allows the highlights list to scroll within
-              the panel on screens where the modal height is constrained.
-          */}
-          <div className="p-8 overflow-y-auto max-h-[90vh] lg:max-h-auto">
-
-            {/* CATEGORY BADGE */}
+          {/* TEXT PANEL */}
+          <div className="flex-1 overflow-y-auto p-6" style={{ background: "var(--synergy-bg)" }}>
             <span
-              className="inline-block text-xs font-bold px-3 py-1 rounded-full mb-4"
-              style={{
-                backgroundColor: "rgba(37, 99, 235, 0.12)",
-                color: "var(--synergy-heading-highlight)",
-              }}
+              className="font-mono text-[10px] font-semibold tracking-widest uppercase px-2 py-1 rounded inline-block mb-4"
+              style={{ background: "rgba(37,99,235,0.08)", color: "var(--synergy-heading-highlight)", border: "1px dashed rgba(37,99,235,0.35)" }}
             >
               {project.category}
             </span>
-
-            {/* PROJECT TITLE */}
-            <h2
-              className="text-3xl font-bold mb-4"
-              style={{ color: "var(--synergy-heading-main)" }}
-            >
+            <h2 className="text-2xl font-bold mb-3 leading-tight" style={{ color: "var(--synergy-heading-main)" }}>
               {project.name}
             </h2>
-
-            {/* META — location + year */}
-            <div className="flex items-center gap-4 mb-6 text-sm opacity-70" style={{ color: "var(--synergy-text)" }}>
-              <div className="flex items-center gap-2">
-                <FiMapPin size={16} />
-                <span>{project.location}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <FiCalendar size={16} />
-                <span>{project.year}</span>
-              </div>
+            <div className="flex items-center gap-4 mb-5 text-xs opacity-60" style={{ color: "var(--synergy-text)" }}>
+              <span className="flex items-center gap-1.5"><FiMapPin size={13} />{project.location}</span>
+              <span className="flex items-center gap-1.5"><FiCalendar size={13} />{project.year}</span>
             </div>
-
-            {/* SCOPE */}
-            <div className="mb-6">
-              <h4 className="text-sm font-bold mb-2 uppercase tracking-wider opacity-60" style={{ color: "var(--synergy-text)" }}>
-                Scope
-              </h4>
-              <p className="text-base" style={{ color: "var(--synergy-text)" }}>
-                {project.scope}
-              </p>
+            <div className="mb-5" style={{ borderTop: "1px solid var(--synergy-card-border)" }} />
+            <div className="mb-5">
+              <p className="font-mono text-[10px] font-bold uppercase tracking-widest mb-1.5 opacity-40" style={{ color: "var(--synergy-text)" }}>Scope</p>
+              <p className="text-sm" style={{ color: "var(--synergy-text)" }}>{project.scope}</p>
             </div>
-
-            {/* FULL DESCRIPTION — no line-clamp, complete text shown */}
-            <div className="mb-6">
-              <h4 className="text-sm font-bold mb-2 uppercase tracking-wider opacity-60" style={{ color: "var(--synergy-text)" }}>
-                Description
-              </h4>
-              <p className="text-base leading-relaxed opacity-80" style={{ color: "var(--synergy-text)" }}>
-                {project.description}
-              </p>
+            <div className="mb-5">
+              <p className="font-mono text-[10px] font-bold uppercase tracking-widest mb-1.5 opacity-40" style={{ color: "var(--synergy-text)" }}>Description</p>
+              <p className="text-sm leading-relaxed opacity-75" style={{ color: "var(--synergy-text)" }}>{project.description}</p>
             </div>
-
-            {/* KEY HIGHLIGHTS
-                Bullet dot uses the brand highlight colour.
-                flex-shrink-0 on the dot prevents it from squishing
-                when highlight text wraps onto multiple lines.
-            */}
             <div>
-              <h4 className="text-sm font-bold mb-3 uppercase tracking-wider opacity-60" style={{ color: "var(--synergy-text)" }}>
-                Key Highlights
-              </h4>
-              <ul className="space-y-2">
-                {project.highlights.map((highlight, idx) => (
-                  <li key={idx} className="flex items-start gap-2 text-sm" style={{ color: "var(--synergy-text)" }}>
-                    <div
-                      className="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0"
-                      style={{ backgroundColor: "var(--synergy-heading-highlight)" }}
-                    />
-                    <span className="opacity-75">{highlight}</span>
+              <p className="font-mono text-[10px] font-bold uppercase tracking-widest mb-3 opacity-40" style={{ color: "var(--synergy-text)" }}>Key Highlights</p>
+              <ul className="space-y-2.5">
+                {project.highlights.map((h, i) => (
+                  <li key={i} className="flex items-start gap-3 text-sm" style={{ color: "var(--synergy-text)" }}>
+                    <span
+                      className="font-mono text-[10px] font-bold flex-shrink-0 mt-0.5 w-5 h-5 rounded flex items-center justify-center"
+                      style={{ background: "rgba(37,99,235,0.1)", color: "var(--synergy-heading-highlight)", border: "1px solid rgba(37,99,235,0.25)" }}
+                    >
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="opacity-75">{h}</span>
                   </li>
                 ))}
               </ul>
@@ -593,24 +574,7 @@ function GalleryModal({ project, onClose }) {
 }
 
 /* ===============================
-   CONSTRUCTION PORTFOLIO COMPONENT — MAIN
-
-   Displays the full construction portfolio with:
-   - Left-aligned section header with eyebrow label and highlighted heading
-   - Responsive 1 → 2 → 3 column card grid with staggered entrance
-   - Each card has an image carousel, category badge, meta, description preview
-   - Clicking any card opens the GalleryModal lightbox
-   - AnimatePresence handles the modal's enter/exit animation cycle
-
-   STATE:
-   selectedProject — null when the modal is closed. Set to the clicked
-                     project object to open the modal. Reset to null
-                     by GalleryModal's onClose to close it.
-
-   WHY AnimatePresence WRAPS THE MODAL:
-   Without AnimatePresence, the modal disappears instantly when
-   selectedProject is set to null. AnimatePresence keeps the component
-   mounted long enough for the exit animation to complete.
+   MAIN EXPORT
 ================================ */
 export default function ConstructionPortfolio() {
   const [selectedProject, setSelectedProject] = useState(null);
@@ -621,8 +585,6 @@ export default function ConstructionPortfolio() {
       style={{ backgroundColor: "var(--synergy-bg)" }}
     >
       <div className="w-[90%] lg:w-[80%] mx-auto">
-
-        {/* SECTION HEADER — left-aligned to match TechPortfolio layout */}
         <motion.div
           variants={fadeUp}
           initial="hidden"
@@ -630,69 +592,35 @@ export default function ConstructionPortfolio() {
           viewport={{ once: true, amount: 0.3 }}
           className="max-w-2xl mb-16"
         >
-          {/* EYEBROW LABEL */}
-          <p
-            className="text-xs md:text-sm tracking-[0.3em] uppercase mb-4 opacity-70"
-            style={{ color: "var(--synergy-text)" }}
-          >
+          <p className="text-xs md:text-sm tracking-[0.3em] uppercase mb-4" style={{ color: "var(--synergy-text)", opacity: 0.7 }}>
             Construction & Property
           </p>
-
-          {/* MAIN HEADING */}
-          <h2
-            className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-6"
-            style={{ color: "var(--synergy-heading-main)" }}
-          >
-            What We've
-            <br />
-            <span style={{ color: "var(--synergy-heading-highlight)" }}>
-              Built
-            </span>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight mb-6" style={{ color: "var(--synergy-heading-main)" }}>
+            What We've<br />
+            <span style={{ color: "var(--synergy-heading-highlight)" }}>Built</span>
           </h2>
-
-          {/* SUPPORTING DESCRIPTION */}
-          <p
-            className="text-base md:text-lg leading-relaxed opacity-70"
-            style={{ color: "var(--synergy-text)" }}
-          >
+          <p className="text-base md:text-lg leading-relaxed" style={{ color: "var(--synergy-text)", opacity: 0.7 }}>
             From residential homes to commercial developments — explore our portfolio
             of construction projects across Nigeria. Click any project to view the full gallery.
           </p>
         </motion.div>
 
-        {/* PROJECTS GRID
-            staggerContainer cascades each ProjectCard's entrance.
-            amount: 0.05 fires early so cards animate before the user
-            has fully scrolled to the bottom of the grid.
-        */}
         <motion.div
           variants={staggerContainer}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.05 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
         >
-          {PROJECTS.map((project) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              onClick={setSelectedProject} // Passes the full project object to open the modal
-            />
+          {PROJECTS.map((project, index) => (
+            <ProjectCard key={project.id} project={project} index={index} onClick={setSelectedProject} />
           ))}
         </motion.div>
-
       </div>
 
-      {/* GALLERY MODAL
-          AnimatePresence keeps the modal mounted during its exit animation
-          when selectedProject is set back to null by onClose.
-      */}
       <AnimatePresence>
         {selectedProject && (
-          <GalleryModal
-            project={selectedProject}
-            onClose={() => setSelectedProject(null)}
-          />
+          <GalleryModal project={selectedProject} onClose={() => setSelectedProject(null)} />
         )}
       </AnimatePresence>
     </section>

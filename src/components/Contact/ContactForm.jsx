@@ -1,53 +1,26 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
-// import emailjs from "@emailjs/browser";
 import { FiCheck, FiUser, FiMail, FiPhone, FiMessageSquare, FiLayers, FiZap } from "react-icons/fi";
 
 /* ===============================
-   EMAILJS CONFIGURATION
+   FORMSPREE CONFIGURATION
 
-   WHY EMAILJS:
-   EmailJS sends emails directly from the frontend — no PHP backend,
-   no server, no extra API routes needed. Your backend dev doesn't
-   need to touch anything for the contact form to work.
+   WHY FORMSPREE:
+   Formspree handles form submissions directly from the frontend — no
+   backend, no server, no extra API routes needed. Submissions are
+   received at your Formspree dashboard and forwarded to your email.
 
-   HOW TO SET UP (one-time, ~5 minutes):
-   ─────────────────────────────────────
-   STEP 1 — Create account:
-     Go to https://www.emailjs.com and sign up for free.
+   HOW IT WORKS:
+   Each form submission sends a POST request with a JSON body to your
+   unique Formspree endpoint. Formspree validates the request, stores
+   the submission, and emails it to the address linked to your account.
 
-   STEP 2 — Add an Email Service:
-     Dashboard → "Email Services" → Add Service (Gmail, Outlook, etc.)
-     Copy the SERVICE ID → paste into EMAILJS_SERVICE_ID below.
+   FREE TIER: 50 submissions/month. Upgrade at formspree.io if needed.
 
-   STEP 3 — Create an Email Template:
-     Dashboard → "Email Templates" → Create Template.
-     Use these exact {{variable}} names in your template body:
-       {{from_name}}        — Sender's full name
-       {{from_email}}       — Sender's email address
-       {{phone}}            — Sender's phone number
-       {{service_interest}} — "Construction" or "Technology"
-       {{specific_service}} — e.g. "Agile Consulting"
-       {{message}}          — The project description
-       {{email_subject}}    — e.g. "[Inquiry] Tech - Agile Consulting"
-       {{lead_type}}        — Same as service_interest (for filtering)
-       {{timestamp}}        — Human-readable date/time of submission
-     In the Template "Subject" field, set it to: {{email_subject}}
-     This makes Elevare's inbox show the lead type before opening the email.
-     Copy the TEMPLATE ID → paste into EMAILJS_TEMPLATE_ID below.
-
-   STEP 4 — Get your Public Key:
-     Dashboard → "Account" → Copy Public Key
-     Paste into EMAILJS_PUBLIC_KEY below.
-
-   STEP 5 — Install the package:
-     Run: npm install @emailjs/browser
-
-   FREE TIER: 200 emails/month. Upgrade at emailjs.com if needed.
+   ENDPOINT: The URL below is your unique Formspree form endpoint.
+   Do not share this publicly to avoid spam abuse.
 ================================ */
-const EMAILJS_SERVICE_ID  = "YOUR_SERVICE_ID";   // e.g. "service_abc123"
-const EMAILJS_TEMPLATE_ID = "YOUR_TEMPLATE_ID";  // e.g. "template_xyz456"
-const EMAILJS_PUBLIC_KEY  = "YOUR_PUBLIC_KEY";   // e.g. "aBcDeFgHiJkLmNoPqRsT"
+const FORMSPREE_ENDPOINT = "https://formspree.io/f/mlgwvnzk";
 
 /* ===============================
    ANIMATION VARIANTS
@@ -94,15 +67,16 @@ const slideIn = {
 
    Purpose: Single source of truth for all service options.
    Structured as an object so:
-   - The category key ("Construction" / "Technology") feeds directly
-     into the email subject line (e.g. "[Inquiry] Tech - Agile Consulting")
-   - The services array populates the conditional dropdown
-   - The icon and color are consumed by the selection card UI
+   - The category key ("Construction" / "Technology") is sent as the
+     "service_interest" field in the Formspree payload, making it easy
+     to filter submissions in the Formspree dashboard.
+   - The services array populates the conditional dropdown.
+   - The icon and color are consumed by the selection card UI.
 
    WHY HERE (outside the component):
    Defined at module level so it is never re-created on re-renders.
    Adding a new service only requires editing this object — the form
-   UI, validation, and email routing all update automatically.
+   UI, validation, and submission payload all update automatically.
 ================================ */
 const serviceCategories = {
   Construction: {
@@ -134,7 +108,7 @@ const serviceCategories = {
    - Service category selection cards (Construction / Technology)
    - Conditional specific-service dropdown (resets on category change)
    - Real-time field validation with animated error messages
-   - Intelligent email subject line routing via EmailJS
+   - Formspree fetch-based submission with JSON payload
    - Animated success modal with service-specific confirmation copy
    - Fully accessible: labels, aria attributes, focus states, role="alert"
    - Theme-aware: all colors use CSS variables for dark/light mode support
@@ -154,7 +128,7 @@ export default function ContactForm() {
                        as the user corrects each field (better UX than
                        wiping all errors on any keystroke).
      isSubmitting    — Disables the submit button and shows a spinner
-                       during the EmailJS call to prevent double-sends.
+                       during the Formspree fetch call to prevent double-sends.
      focusedField    — Tracks the active input to apply a custom focus ring
                        via inline style (Tailwind focus: utilities can't
                        read dynamic CSS variable border colors).
@@ -183,7 +157,7 @@ export default function ContactForm() {
      When the user switches category (Construction → Technology),
      specificService resets to "" so the dropdown never carries over
      a value that doesn't belong to the new category's service list.
-     This prevents a mismatched payload reaching EmailJS.
+     This prevents a mismatched payload reaching Formspree.
   -------------------------------- */
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -230,27 +204,34 @@ export default function ContactForm() {
   };
 
   /* --------------------------------
-     HANDLE FORM SUBMIT — EMAILJS LEAD ROUTING
+     HANDLE FORM SUBMIT — FORMSPREE SUBMISSION
 
-     This is the core submission and routing logic. Here's the "why":
+     This is the core submission logic. Here's the "why":
 
-     1. EMAIL SUBJECT CONSTRUCTION
-        The subject "[Inquiry] Category - Specific Service" is built here
-        so Elevare's inbox shows the lead type before the email is opened.
-        Tech uses the shorthand "Tech" to match Elevare's internal naming.
-        Example outputs:
-          "[Inquiry] Construction - Project Management"
-          "[Inquiry] Tech - Agile Consulting"
+     1. FORMSPREE FETCH REQUEST
+        We POST a JSON body to FORMSPREE_ENDPOINT using the native fetch API.
+        Formspree reads the JSON fields and forwards them to your linked email.
+        The "Accept: application/json" header tells Formspree to respond with
+        JSON (not a redirect), so we can handle success/error in JS ourselves.
 
-     2. EMAILJS TEMPLATE PARAMS
-        emailjs.send() receives templateParams which maps 1:1 to the
-        {{variable}} placeholders in your EmailJS template.
-        Every field the team needs to action the lead is included.
+     2. PAYLOAD STRUCTURE
+        Every field the team needs to action the lead is included:
+        - _subject: Sets the email subject line in Formspree's outgoing email.
+          Format: "[Inquiry] Category - Specific Service"
+          Tech uses the shorthand "Tech" to match Elevare's internal naming.
+          Example outputs:
+            "[Inquiry] Construction - Project Management"
+            "[Inquiry] Tech - Agile Consulting"
+        - All other keys map to readable column names in the Formspree dashboard.
 
      3. SERVICE-SPECIFIC MODAL COPY
         Construction leads see copy about a site feasibility review.
         Technology leads see copy about an Agile discovery call.
         Sets accurate expectations and reduces follow-up friction.
+
+     4. ERROR HANDLING
+        If Formspree responds with ok: false (e.g. network error, spam block),
+        the catch block surfaces a friendly alert so the user can retry.
   -------------------------------- */
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -261,6 +242,7 @@ export default function ContactForm() {
     try {
       /* --
          BUILD EMAIL SUBJECT LINE
+         Formspree uses the reserved "_subject" key to set the email subject.
          Format: "[Inquiry] Category - Specific Service"
          Tech uses "Tech" shorthand to match Elevare's internal naming.
       -- */
@@ -270,38 +252,44 @@ export default function ContactForm() {
           : `[Inquiry] ${formData.serviceInterest} - ${formData.specificService}`;
 
       /* --
-         EMAILJS TEMPLATE PARAMS
-         These variable names must match exactly what you used in your
-         EmailJS template (the {{variable_name}} placeholders).
-         If you rename a field here, rename it in the template too.
+         FORMSPREE PAYLOAD
+         Keys become column headers in the Formspree submissions dashboard
+         and field labels in the forwarded email. Use readable names.
+         "_subject" is a Formspree reserved key — it sets the email subject.
       -- */
-      const templateParams = {
-        from_name:        formData.fullName,
-        from_email:       formData.email,
-        phone:            formData.phone,
-        service_interest: formData.serviceInterest,
-        specific_service: formData.specificService,
-        message:          formData.message,
-        email_subject:    emailSubject,              // Drives the Subject field in the EmailJS template
-        lead_type:        formData.serviceInterest,  // "Construction" or "Technology" — useful for filtering
-        timestamp:        new Date().toLocaleString("en-NG", {
+      const payload = {
+        _subject:         emailSubject,
+        "Full Name":      formData.fullName,
+        "Email":          formData.email,
+        "Phone":          formData.phone,
+        "Service":        formData.serviceInterest,
+        "Specific Need":  formData.specificService,
+        "Message":        formData.message,
+        "Submitted At":   new Date().toLocaleString("en-NG", {
           dateStyle: "full",
           timeStyle: "short",
         }),
       };
 
       /* --
-         SEND VIA EMAILJS
-         emailjs.send() returns a promise. On success it resolves with
-         { status: 200, text: "OK" }. On failure it rejects — caught below.
-         The three IDs come from the constants defined at the top of this file.
+         POST TO FORMSPREE
+         fetch() sends the payload as JSON to the Formspree endpoint.
+         "Accept: application/json" prevents Formspree from redirecting
+         and instead returns a JSON response we can check programmatically.
+         If response.ok is false, we throw to enter the catch block.
       -- */
-      await emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID,
-        templateParams,
-        EMAILJS_PUBLIC_KEY
-      );
+      const response = await fetch(FORMSPREE_ENDPOINT, {
+        method:  "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept":       "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Formspree responded with status ${response.status}`);
+      }
 
       /* --
          SET SERVICE-SPECIFIC CONFIRMATION COPY
@@ -333,8 +321,8 @@ export default function ContactForm() {
       });
 
     } catch (error) {
-      // Log the raw EmailJS error for debugging but show a friendly message to the user
-      console.error("EmailJS submission error:", error);
+      // Log the raw Formspree error for debugging but show a friendly message to the user
+      console.error("Formspree submission error:", error);
       alert("Something went wrong sending your message. Please try again or contact us directly.");
     } finally {
       // Always re-enable the submit button whether the request succeeded or failed
@@ -628,8 +616,9 @@ export default function ContactForm() {
                     The selected card fills with the brand highlight colour
                     for instant, unambiguous feedback.
 
-                    The category key ("Construction" / "Technology") feeds
-                    directly into emailSubject inside handleFormSubmit.
+                    The category key ("Construction" / "Technology") is sent
+                    as "Service" in the Formspree payload and also drives the
+                    email subject line built in handleFormSubmit.
                 ---- */}
                 <motion.div
                   variants={fadeUp}
@@ -709,6 +698,8 @@ export default function ContactForm() {
 
                     Options are driven entirely by the selected category's
                     `services` array in serviceCategories above.
+                    The chosen value is sent as "Specific Need" in the
+                    Formspree payload and appended to the email subject line.
                 ---- */}
                 {formData.serviceInterest && (
                   <motion.div
@@ -796,7 +787,7 @@ export default function ContactForm() {
                 {/* ---- SUBMIT BUTTON
 
                     whileHover / whileTap give tactile micro-interaction feedback.
-                    disabled during submission prevents duplicate EmailJS requests.
+                    disabled during submission prevents duplicate Formspree requests.
                     Spinner SVG provides a clear loading state visual.
                 ---- */}
                 <motion.button

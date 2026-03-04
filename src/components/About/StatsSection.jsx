@@ -66,8 +66,8 @@ export default function StatsSection() {
   */
   const stats = [
     { value: "13", label: "Years of Experience" },
-    { value: "11", label: "Winning Global Awards" },
-    { value: "41", label: "Complete Total Projects" },
+    { value: "11", label: "Winning  Awards" },
+    { value: "50", label: "Complete Total Projects" },
     { value: "31", label: "Happy Local Clients" },
   ];
 

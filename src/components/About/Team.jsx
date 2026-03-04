@@ -62,7 +62,7 @@ const VARIANT_IMAGE_SCALE = {
 
 const TEAM_DATA = [
   {
-    name: "Sunday Folorunsho Akinlose",
+    name: "Folorunsho Akinlose",
     role: "Developer / Projects Lead",
     image: imgCEO,
     /**
@@ -111,13 +111,13 @@ const TEAM_DATA = [
     },
   },
   {
-    name: "Oladajo Abiodun",
+    name: "Abiodun Oladajo ",
     role: "Admin / Technical Coordinator",
     image: imgTechnical,
     bio: [
-      `Oladajo Abiodun is the Admin / Technical Coordinator at Elevare Projects Ltd, where she ensures seamless alignment between administrative operations and technical execution. She plays a pivotal role in coordinating internal processes, managing documentation, and supporting project teams to maintain efficiency across all stages of delivery.`,
+      `Abiodun is the Admin / Technical Coordinator at Elevare Projects Ltd, where she ensures seamless alignment between administrative operations and technical execution. She plays a pivotal role in coordinating internal processes, managing documentation, and supporting project teams to maintain efficiency across all stages of delivery.`,
       `With a strong organisational mindset and attention to detail, she oversees scheduling, communication flow, resource coordination, and compliance requirements, ensuring that both operational and technical functions remain structured and well-integrated.`,
-      `Her ability to bridge administrative systems with project workflows enhances productivity, strengthens accountability, and contributes significantly to the smooth execution of the firm's portfolio.`,
+      
     ],
     socials: {
       linkedin: "https://www.linkedin.com/in/abiodun-oladoja-",
@@ -410,8 +410,8 @@ export default function TeamSection() {
           <p className="text-sm lg:text-base max-w-2xl mx-auto opacity-80">
             Elevare Projects Ltd prides itself on competent leadership. Our team
             stands at the forefront of delivering excellence in{" "}
-            <strong>Construction Project Management Nigeria</strong> and{" "}
-            <strong>Agile Scrum Coaching Africa</strong>.
+            <strong>Construction, Project Management </strong> and{" "}
+            <strong>Digital solutions.</strong>.
           </p>
         </motion.div>
 

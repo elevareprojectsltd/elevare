@@ -47,7 +47,8 @@ const SLIDES = [
   { img: hero5, label: "Digital Innovation" },
 ];
 
-const INTERVAL = 5000;
+// ↓ Was 5000 — now 3500ms for noticeably faster auto-advance
+const INTERVAL = 3500;
 
 /* Slide direction: +1 = next (right→left), -1 = prev (left→right) */
 const slideVariants = {
@@ -61,9 +62,11 @@ const slideVariants = {
     scale: 1,
     opacity: 1,
     transition: {
-      x: { duration: 0.75, ease: [0.76, 0, 0.24, 1] },
-      scale: { duration: 0.95, ease: [0.22, 1, 0.36, 1] },
-      opacity: { duration: 0.4 },
+      // ↓ Was 0.75s — now 0.45s
+      x: { duration: 0.45, ease: [0.76, 0, 0.24, 1] },
+      // ↓ Was 0.95s — now 0.55s
+      scale: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+      opacity: { duration: 0.25 },
     },
   },
   exit: (dir) => ({
@@ -71,17 +74,20 @@ const slideVariants = {
     scale: 0.96,
     opacity: 0,
     transition: {
-      x: { duration: 0.75, ease: [0.76, 0, 0.24, 1] },
-      scale: { duration: 0.75 },
-      opacity: { duration: 0.35 },
+      // ↓ Was 0.75s — now 0.4s
+      x: { duration: 0.4, ease: [0.76, 0, 0.24, 1] },
+      scale: { duration: 0.4 },
+      // ↓ Was 0.35s — now 0.2s
+      opacity: { duration: 0.2 },
     },
   }),
 };
 
 const captionVariants = {
   hidden: { opacity: 0, y: 10 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, delay: 0.35 } },
-  exit:    { opacity: 0, y: -6, transition: { duration: 0.25 } },
+  // ↓ delay was 0.35s — now 0.2s
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, delay: 0.2 } },
+  exit:    { opacity: 0, y: -6, transition: { duration: 0.15 } },
 };
 
 export default function HeroMediaBridge() {
@@ -209,8 +215,8 @@ export default function HeroMediaBridge() {
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, y: -8 }}
-                    animate={{ opacity: 1, y: 0, transition: { duration: 0.4 } }}
-                    exit={{ opacity: 0, y: 8, transition: { duration: 0.2 } }}
+                    animate={{ opacity: 1, y: 0, transition: { duration: 0.3 } }}
+                    exit={{ opacity: 0, y: 8, transition: { duration: 0.15 } }}
                     className="flex items-end gap-1"
                   >
                     <span

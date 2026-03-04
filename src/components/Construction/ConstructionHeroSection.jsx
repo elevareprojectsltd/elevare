@@ -50,7 +50,7 @@ const statVariant = {
 ================================ */
 const COMPANY_STATS = {
   yearsExperience: "10+",
-  projectsCompleted: "1500+",
+  projectsCompleted: "200+",
   clientRating: "4.8/5",
   satisfactionRate: "98%"
 };

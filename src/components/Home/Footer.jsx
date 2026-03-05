@@ -216,11 +216,7 @@ export default function Footer({ darkMode }) {
           <motion.div variants={fadeUp} custom={3}>
             <h4 className="font-semibold mb-4">Legal</h4>
             <ul className="space-y-3 text-sm opacity-80">
-              <li>
-                <Link to="/privacy" className="hover:opacity-100 transition">
-                  Terms & Conditions
-                </Link>
-              </li>
+             
               <li>
                 <Link to="/privacy" className="hover:opacity-100 transition">
                   Privacy Policy

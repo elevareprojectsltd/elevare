@@ -50,35 +50,27 @@ const SERVICE_LINKS = [
    Purpose: Define reusable animation patterns for Framer Motion.
    These create smooth entrance/exit effects without layout shifts.
 
-   mobileMenuVariants   — Sidebar slides in from x: 100% (off right edge)
-                          and slides back out on close. type: "tween" is used
-                          instead of "spring" for a more controlled, linear feel
-                          appropriate for a navigation panel.
+   mobileMenuVariants    — Sidebar slides in from x: 100% (off right edge)
+                           and slides back out on close. type: "tween" is used
+                           instead of "spring" for a more controlled, linear feel
+                           appropriate for a navigation panel.
    mobileNavItemVariants — Each nav link in the sidebar slides in from x: 20
-                          with a staggered delay driven by the custom index (i).
-                          custom={index} on each <motion.li> drives this delay.
-   dropdownVariants     — Desktop Services dropdown fades in, drops down 10px,
-                          and scales from 95% → 100%. exit reverses this.
-                          duration: 0.15 on exit is faster than enter (0.2)
-                          so closing feels snappy and doesn't block navigation.
+                           with a staggered delay driven by the custom index (i).
+                           custom={index} on each <motion.li> drives this delay.
+   dropdownVariants      — Desktop Services dropdown fades in, drops down 10px,
+                           and scales from 95% → 100%. exit reverses this.
+                           duration: 0.15 on exit is faster than enter (0.2)
+                           so closing feels snappy and doesn't block navigation.
 ================================ */
 const mobileMenuVariants = {
   hidden: { x: "100%" },
   visible: {
     x: 0,
-    transition: {
-      type: "tween",
-      duration: 0.3,
-      ease: "easeInOut",
-    },
+    transition: { type: "tween", duration: 0.3, ease: "easeInOut" },
   },
   exit: {
     x: "100%",
-    transition: {
-      type: "tween",
-      duration: 0.3,
-      ease: "easeInOut",
-    },
+    transition: { type: "tween", duration: 0.3, ease: "easeInOut" },
   },
 };
 
@@ -98,21 +90,12 @@ const mobileNavItemVariants = {
 const dropdownVariants = {
   hidden: { opacity: 0, y: -10, scale: 0.95 },
   visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: {
-      duration: 0.2,
-      ease: "easeOut",
-    },
+    opacity: 1, y: 0, scale: 1,
+    transition: { duration: 0.2, ease: "easeOut" },
   },
   exit: {
-    opacity: 0,
-    y: -10,
-    scale: 0.95,
-    transition: {
-      duration: 0.15, // Faster exit so closing feels snappy
-    },
+    opacity: 0, y: -10, scale: 0.95,
+    transition: { duration: 0.15 }, // Faster exit so closing feels snappy
   },
 };
 
@@ -122,14 +105,18 @@ const dropdownVariants = {
    Reusable link item for the desktop navigation bar.
    whileHover y: -2 gives a subtle lift on hover that signals
    interactivity without a full colour change on the list item.
-   The blue-600 colour change is handled by the Link's hover class.
+   Hover colour uses CSS variable --nav-hover-text so it responds
+   correctly to both light mode (dark blue) and dark mode (white).
 ================================ */
 function DesktopNavLink({ label, path }) {
+  const [hovered, setHovered] = useState(false);
   return (
     <motion.li
-      className="hover:text-[#06284D] transition"
       whileHover={{ y: -2 }}
       transition={{ duration: 0.2 }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{ color: hovered ? "var(--nav-hover-text)" : "inherit", transition: "color 0.2s" }}
     >
       <Link to={path}>{label}</Link>
     </motion.li>
@@ -170,12 +157,19 @@ function ServicesDropdown({ isOpen }) {
               >
                 <Link
                   to={service.path}
-                  className="block px-5 py-3 hover:bg-black/10 transition"
+                  className="block px-5 py-3 transition"
+                  style={{ color: "var(--text-color)" }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = "var(--nav-hover-text)";
+                    e.currentTarget.style.background = "var(--nav-hover-bg)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = "var(--text-color)";
+                    e.currentTarget.style.background = "transparent";
+                  }}
                 >
                   <p className="font-medium">{service.label}</p>
-                  <p className="text-xs opacity-70">
-                    {service.description}
-                  </p>
+                  <p className="text-xs opacity-70">{service.description}</p>
                 </Link>
               </motion.li>
             ))}
@@ -198,10 +192,17 @@ function ServicesDropdown({ isOpen }) {
    - Body scroll lock when the mobile sidebar is open
 
    STATE:
-   menuOpen          — Controls mobile sidebar visibility
-   servicesOpen      — Controls desktop Services dropdown visibility
+   menuOpen           — Controls mobile sidebar visibility
+   servicesOpen       — Controls desktop Services dropdown visibility
    mobileServicesOpen — Controls mobile Services accordion expand/collapse
-   darkMode          — Toggles dark class on <html> for theme switching
+   darkMode           — Toggles dark class on <html> for theme switching
+
+   HOVER FIX:
+   All hover colour changes now use CSS variables (--nav-hover-text,
+   --nav-hover-bg) defined in index.css. In light mode these resolve to
+   dark blue; in dark mode they resolve to white. Tailwind's hardcoded
+   hover:text-[#06284D] classes have been replaced throughout so the
+   dark mode experience is consistent.
 ================================ */
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -224,15 +225,17 @@ export default function Navbar() {
      unmounts — prevents a stuck overflow: hidden state.
   */
   useEffect(() => {
-    if (menuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
-    return () => {
-      document.body.style.overflow = "unset";
-    };
+    document.body.style.overflow = menuOpen ? "hidden" : "unset";
+    return () => { document.body.style.overflow = "unset"; };
   }, [menuOpen]);
+
+  /* INLINE HOVER HANDLER HELPERS
+     Used on any element where Tailwind's static hover classes can't
+     respond to CSS variables. Reads the current variable value at
+     hover time so light/dark mode is always respected.
+  */
+  const onHoverIn  = (e) => { e.currentTarget.style.color = "var(--nav-hover-text)"; };
+  const onHoverOut = (e) => { e.currentTarget.style.color = "var(--text-color)"; };
 
   return (
     <>
@@ -242,10 +245,7 @@ export default function Navbar() {
       */}
       <nav
         className="w-full border-b transition-colors duration-300 relative z-50"
-        style={{
-          backgroundColor: "var(--nav-bg)",
-          borderColor: "var(--nav-border)",
-        }}
+        style={{ backgroundColor: "var(--nav-bg)", borderColor: "var(--nav-border)" }}
       >
         <div className="w-[90%] lg:w-[80%] mx-auto">
           <div className="flex items-center justify-between h-20">
@@ -255,7 +255,7 @@ export default function Navbar() {
               <motion.img
                 src={logo}
                 alt="Elevare"
-                className="h-10 w-auto"
+                className="h-15 w-auto"
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: 0.2 }}
               />
@@ -279,6 +279,8 @@ export default function Navbar() {
                   onMouseEnter/onMouseLeave on the parent <li> controls
                   the ServicesDropdown visibility via servicesOpen state.
                   The chevron rotates 180° when the dropdown is open.
+                  Hover colour uses --nav-hover-text via inline handlers
+                  so it turns white in dark mode and dark blue in light mode.
               */}
               <motion.li
                 className="relative"
@@ -289,7 +291,10 @@ export default function Navbar() {
               >
                 <button
                   type="button"
-                  className="flex items-center gap-1 hover:text-[#06284D] transition"
+                  className="flex items-center gap-1 transition"
+                  style={{ color: "inherit" }}
+                  onMouseEnter={onHoverIn}
+                  onMouseLeave={onHoverOut}
                 >
                   Services
                   <motion.div
@@ -315,15 +320,18 @@ export default function Navbar() {
               {/* DARK MODE TOGGLE
                   whileHover rotate: 15 gives the icon a playful tilt.
                   Icon swaps between FiMoon (light mode) and FiSun (dark mode).
+                  Hover colour uses --nav-hover-text so it turns white in dark mode.
               */}
               <motion.button
                 onClick={() => setDarkMode(!darkMode)}
-                className="text-xl hover:text-[#06284D] transition"
+                className="text-xl transition"
                 style={{ color: "var(--text-color)" }}
                 aria-label="Toggle dark mode"
                 whileHover={{ scale: 1.1, rotate: 15 }}
                 whileTap={{ scale: 0.95 }}
                 transition={{ duration: 0.2 }}
+                onMouseEnter={onHoverIn}
+                onMouseLeave={onHoverOut}
               >
                 {darkMode ? <FiSun /> : <FiMoon />}
               </motion.button>
@@ -331,13 +339,16 @@ export default function Navbar() {
               {/* MOBILE HAMBURGER / CLOSE BUTTON
                   Only visible below lg breakpoint (lg:hidden).
                   Icon swaps between FiMenu (closed) and FiX (open).
+                  Hover colour uses --nav-hover-text for consistency.
               */}
               <motion.button
-                className="lg:hidden text-2xl"
+                className="lg:hidden text-2xl transition"
                 style={{ color: "var(--text-color)" }}
                 onClick={() => setMenuOpen(!menuOpen)}
                 aria-label="Toggle menu"
                 whileTap={{ scale: 0.9 }}
+                onMouseEnter={onHoverIn}
+                onMouseLeave={onHoverOut}
               >
                 {menuOpen ? <FiX /> : <FiMenu />}
               </motion.button>
@@ -378,21 +389,24 @@ export default function Navbar() {
               animate="visible"
               exit="exit"
               className="fixed top-0 right-0 h-full w-[80%] max-w-sm z-50 lg:hidden shadow-2xl"
-              style={{
-                backgroundColor: "var(--nav-bg)",
-              }}
+              style={{ backgroundColor: "var(--nav-bg)" }}
             >
               <div className="flex flex-col h-full">
 
                 {/* SIDEBAR HEADER — close button only */}
-                <div className="flex items-center justify-end p-6 border-b" style={{ borderColor: "var(--nav-border)" }}>
+                <div
+                  className="flex items-center justify-end p-6 border-b"
+                  style={{ borderColor: "var(--nav-border)" }}
+                >
                   <motion.button
                     onClick={() => setMenuOpen(false)}
-                    className="text-2xl"
+                    className="text-2xl transition"
                     style={{ color: "var(--text-color)" }}
                     aria-label="Close menu"
                     whileHover={{ scale: 1.1, rotate: 90 }} // Rotates to form an × on hover
                     whileTap={{ scale: 0.9 }}
+                    onMouseEnter={onHoverIn}
+                    onMouseLeave={onHoverOut}
                   >
                     <FiX />
                   </motion.button>
@@ -402,6 +416,7 @@ export default function Navbar() {
                     overflow-y-auto allows scrolling if many links are added.
                     Each link closes the sidebar (onClick setMenuOpen(false))
                     so the user doesn't have to manually dismiss it.
+                    Hover colour uses inline handlers for CSS variable support.
                 */}
                 <nav className="flex-1 overflow-y-auto py-6">
                   <ul
@@ -420,7 +435,10 @@ export default function Navbar() {
                         <Link
                           to={item.path}
                           onClick={() => setMenuOpen(false)}
-                          className="block py-2 hover:text-[#06284D] transition"
+                          className="block py-2 transition"
+                          style={{ color: "var(--text-color)" }}
+                          onMouseEnter={onHoverIn}
+                          onMouseLeave={onHoverOut}
                         >
                           {item.label}
                         </Link>
@@ -442,10 +460,11 @@ export default function Navbar() {
                       animate="visible"
                     >
                       <button
-                        onClick={() =>
-                          setMobileServicesOpen(!mobileServicesOpen)
-                        }
-                        className="flex items-center justify-between w-full py-2 hover:text-[#06284D] transition"
+                        onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
+                        className="flex items-center justify-between w-full py-2 transition"
+                        style={{ color: "var(--text-color)" }}
+                        onMouseEnter={onHoverIn}
+                        onMouseLeave={onHoverOut}
                       >
                         <span>Services</span>
                         <motion.div
@@ -477,12 +496,13 @@ export default function Navbar() {
                                   <Link
                                     to={service.path}
                                     onClick={() => setMenuOpen(false)}
-                                    className="block py-2 hover:text-[#06284D] transition"
+                                    className="block py-2 transition"
+                                    style={{ color: "var(--text-color)" }}
+                                    onMouseEnter={onHoverIn}
+                                    onMouseLeave={onHoverOut}
                                   >
                                     <p className="font-medium">{service.label}</p>
-                                    <p className="text-xs opacity-70 mt-1">
-                                      {service.description}
-                                    </p>
+                                    <p className="text-xs opacity-70 mt-1">{service.description}</p>
                                   </Link>
                                 </motion.li>
                               ))}
@@ -504,7 +524,10 @@ export default function Navbar() {
                         <Link
                           to={item.path}
                           onClick={() => setMenuOpen(false)}
-                          className="block py-2 hover:text-[#06284D] transition"
+                          className="block py-2 transition"
+                          style={{ color: "var(--text-color)" }}
+                          onMouseEnter={onHoverIn}
+                          onMouseLeave={onHoverOut}
                         >
                           {item.label}
                         </Link>

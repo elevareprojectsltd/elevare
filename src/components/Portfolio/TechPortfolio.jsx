@@ -81,28 +81,6 @@ const TECH_PROJECTS = [
   },
   {
     number: "06",
-    title: "Reni Account",
-    category: "Landing Page",
-    tech: ["HTML", "CSS", "JavaScript"],
-    description:
-      "A conversion-focused landing page for Reni — built to communicate the product value proposition clearly and drive sign-ups from the first scroll.",
-    href: "https://renitrans.netlify.app",
-    icon: FiLayout,
-    accent: "#be185d",
-  },
-  {
-    number: "07",
-    title: "SwiftBranding",
-    category: "SaaS Landing Page",
-    tech: ["HTML", "CSS", "JavaScript"],
-    description:
-      "A polished SaaS product landing page for SwiftBranding — featuring pricing sections, testimonials, and a clear value proposition designed to convert visitors.",
-    href: "https://swiftbranding.netlify.app",
-    icon: FiGlobe,
-    accent: "#0d9488",
-  },
-  {
-    number: "08",
     title: "Uber Product Research",
     category: "Product Management",
     tech: ["Product Research", "User Analysis", "Strategy"],
@@ -121,16 +99,15 @@ const TECH_PROJECTS = [
    These create smooth entrance effects without causing layout shifts
    by only animating transform and opacity properties.
 
-   fadeUp         — Section header entrance: slides up + fades in.
+   fadeUp           — Section header entrance: slides up + fades in.
    staggerContainer — Triggers staggered animation across all child cards.
                       delayChildren gives the header time to animate first.
-   itemVariant    — Individual card entrance: consumed by staggerContainer.
+   itemVariant      — Individual card entrance: consumed by staggerContainer.
 ================================ */
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
   visible: {
-    opacity: 1,
-    y: 0,
+    opacity: 1, y: 0,
     transition: { duration: 0.6, ease: "easeOut" },
   },
 };
@@ -140,8 +117,8 @@ const staggerContainer = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1,  // Each card animates 0.1s after the previous
-      delayChildren: 0.1,    // Wait 0.1s before the first card starts
+      staggerChildren: 0.1,   // Each card animates 0.1s after the previous
+      delayChildren: 0.1,     // Wait 0.1s before the first card starts
     },
   },
 };
@@ -149,8 +126,7 @@ const staggerContainer = {
 const itemVariant = {
   hidden: { opacity: 0, y: 24 },
   visible: {
-    opacity: 1,
-    y: 0,
+    opacity: 1, y: 0,
     transition: { duration: 0.5, ease: "easeOut" },
   },
 };
@@ -167,6 +143,14 @@ const itemVariant = {
    - Background gradient glow fades in (opacity-0 → opacity-100)
    - Icon scales up slightly (scale-110)
    - Arrow icon rotates 12deg
+
+   DARK MODE — CARD BACKGROUND:
+   In dark mode --synergy-card-bg is white and --synergy-bg is #06284d.
+   The cards intentionally stay on --synergy-card-bg (white) in dark mode
+   to match the rest of the construction portfolio cards which also use
+   the white card surface on the dark blue page background.
+   Text inside cards uses --synergy-card-text (#031f3a) so it stays
+   readable on the white card surface in both modes.
 
    WHY <motion.a> NOT <Link>:
    All projects link to external URLs (Vercel, Netlify, Google Drive),
@@ -187,7 +171,9 @@ function TechProjectCard({ project }) {
       aria-label={`View ${project.title} — ${project.category} project`}
       className="group relative rounded-2xl p-6 lg:p-8 border-2 transition-all duration-300 hover:shadow-2xl overflow-hidden block focus:outline-none focus:ring-2 focus:ring-offset-2"
       style={{
-        backgroundColor: "var(--synergy-bg)",
+        // Uses --synergy-card-bg so the card surface matches the rest of
+        // the portfolio cards — white in both light and dark mode.
+        backgroundColor: "var(--synergy-card-bg)",
         borderColor: "var(--synergy-card-border)",
       }}
     >
@@ -198,9 +184,7 @@ function TechProjectCard({ project }) {
       */}
       <div
         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl pointer-events-none"
-        style={{
-          background: `linear-gradient(135deg, ${project.accent}08, ${project.accent}04)`,
-        }}
+        style={{ background: `linear-gradient(135deg, ${project.accent}08, ${project.accent}04)` }}
         aria-hidden="true"
       />
 
@@ -223,7 +207,7 @@ function TechProjectCard({ project }) {
       <div className="relative z-10 flex items-center justify-between mb-6">
         <span
           className="text-xs font-bold tracking-[0.2em] opacity-30"
-          style={{ color: "var(--synergy-text)" }}
+          style={{ color: "var(--synergy-card-text)" }}
           aria-hidden="true"
         >
           {project.number}
@@ -231,10 +215,7 @@ function TechProjectCard({ project }) {
 
         <div
           className="w-9 h-9 rounded-full flex items-center justify-center border-2 transition-all duration-300 group-hover:scale-110"
-          style={{
-            borderColor: project.accent,
-            color: project.accent,
-          }}
+          style={{ borderColor: project.accent, color: project.accent }}
           aria-hidden="true"
         >
           <FiArrowUpRight
@@ -250,35 +231,40 @@ function TechProjectCard({ project }) {
       */}
       <div
         className="relative z-10 w-12 h-12 rounded-xl flex items-center justify-center mb-5 transition-all duration-300 group-hover:scale-110"
-        style={{
-          backgroundColor: `${project.accent}18`,
-          color: project.accent,
-        }}
+        style={{ backgroundColor: `${project.accent}18`, color: project.accent }}
         aria-hidden="true"
       >
         <IconComponent size={22} />
       </div>
 
-      {/* CATEGORY LABEL */}
+      {/* CATEGORY LABEL
+          Uses --synergy-card-text so it stays readable on the white
+          card surface in both light and dark mode.
+      */}
       <p
         className="relative z-10 text-xs font-semibold tracking-widest uppercase mb-2 opacity-60"
-        style={{ color: "var(--synergy-text)" }}
+        style={{ color: "var(--synergy-card-text)" }}
       >
         {project.category}
       </p>
 
-      {/* PROJECT TITLE */}
+      {/* PROJECT TITLE
+          Uses --synergy-card-text (not --synergy-heading-main) so the
+          dark blue title remains readable on the white card in dark mode.
+      */}
       <h3
         className="relative z-10 text-xl font-bold mb-3 transition-colors duration-300"
-        style={{ color: "var(--synergy-heading-main)" }}
+        style={{ color: "var(--synergy-card-text)" }}
       >
         {project.title}
       </h3>
 
-      {/* PROJECT DESCRIPTION */}
+      {/* PROJECT DESCRIPTION
+          Uses --synergy-card-text for consistent readability on white card.
+      */}
       <p
         className="relative z-10 text-sm leading-relaxed mb-6 opacity-65"
-        style={{ color: "var(--synergy-text)" }}
+        style={{ color: "var(--synergy-card-text)" }}
       >
         {project.description}
       </p>
@@ -316,6 +302,12 @@ function TechProjectCard({ project }) {
    - Bottom CTA strip with animated ping dot and "Start a Project" button
    - Decorative background blur blobs for visual depth
    - Fully theme-aware via CSS variables
+
+   DARK MODE — SECTION BACKGROUND:
+   The section uses --synergy-bg (#06284d in dark mode) as its background,
+   matching the page. Cards sit on --synergy-card-bg (white) on top of it,
+   giving the same white-card-on-dark-blue look as the construction section.
+   The CTA strip also uses --synergy-card-bg so it lifts off the background.
 ================================ */
 export default function TechPortfolio() {
   return (
@@ -346,6 +338,8 @@ export default function TechPortfolio() {
         {/* SECTION HEADER
             Left-aligned intentionally — asymmetric layout gives this
             section a different rhythm from the centred headers elsewhere.
+            Text uses --synergy-heading-main / --synergy-text so it
+            switches correctly between light (#000) and dark (#fff) mode.
         */}
         <motion.div
           variants={fadeUp}
@@ -364,8 +358,6 @@ export default function TechPortfolio() {
 
           {/* MAIN HEADING
               id ties to aria-labelledby on the parent <section>.
-              "Agile Scrum Coaching Africa" keyword context is reinforced
-              by the Agile Delivery project card in the grid below.
           */}
           <h2
             id="tech-portfolio-heading"
@@ -409,9 +401,9 @@ export default function TechPortfolio() {
         </motion.div>
 
         {/* BOTTOM CTA STRIP
-
-            A lightweight banner that appears after the grid to convert
-            visitors who've just reviewed the work into enquiries.
+            Uses --synergy-card-bg so it lifts off the --synergy-bg page
+            background in both light and dark mode — consistent with cards.
+            Text uses --synergy-card-text for the same reason.
 
             The animated ping dot (relative + animate-ping) draws the eye
             to the strip subtly — communicating "live / active" without
@@ -425,8 +417,10 @@ export default function TechPortfolio() {
           transition={{ delay: 0.3 }}
           className="mt-16 flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl p-6 border-2"
           style={{
+            // Uses --synergy-card-bg so the strip has the same white surface
+            // as the cards in dark mode — not the same dark blue as the bg.
             borderColor: "var(--synergy-card-border)",
-            backgroundColor: "var(--synergy-bg)",
+            backgroundColor: "var(--synergy-card-bg)",
           }}
         >
           {/* LEFT — STATUS DOT + PROMPT TEXT */}
@@ -438,17 +432,15 @@ export default function TechPortfolio() {
             </span>
             <p
               className="text-sm font-medium"
-              style={{ color: "var(--synergy-text)" }}
+              style={{ color: "var(--synergy-card-text)" }}
             >
               Have a project in mind? We'd love to hear about it.
             </p>
           </div>
 
           {/* RIGHT — CTA BUTTON
-              Uses <motion.a> (not <Link>) since /contact is an internal
-              SPA route — but kept as <a> here to avoid importing Link
-              into a portfolio component. Switch to <Link to="/contact">
-              if this component lives inside a React Router context.
+              Uses <motion.a> pointing to the internal /contact route.
+              Switch to <Link to="/contact"> if preferred inside a Router context.
           */}
           <motion.a
             href="/contact"

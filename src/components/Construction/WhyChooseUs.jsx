@@ -29,7 +29,7 @@ const statsBg =
 ================================ */
 const STATS = [
   { value: 10,   suffix: "+",  label: "Years of Excellence", description: "Decade of proven results" },
-  { value: 1500, suffix: "+",  label: "Projects Completed",  description: "Across Nigeria & beyond"  },
+  { value: 200, suffix: "+",  label: "Projects Completed",  description: "Across Nigeria & beyond"  },
   { value: 98,   suffix: "%",  label: "Client Satisfaction", description: "Consistently delivering"  },
   { value: 4.8,  suffix: "/5", label: "Average Rating",      description: "Trusted by hundreds"      },
 ];
@@ -285,7 +285,7 @@ export default function WhyChooseUs() {
       {/* ============================================
           PART 2: WHY CHOOSE US - TWO COLUMN LAYOUT
           
-          Left: Large construction image with floating badge
+          Left: Large construction image
           Right: Heading, description, and feature list
       ============================================ */}
       <div className="w-[90%] lg:w-[80%] mx-auto py-16 lg:py-24">
@@ -312,24 +312,6 @@ export default function WhyChooseUs() {
               {/* Subtle gradient overlay for depth */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
             </div>
-
-            {/* Floating "10+ Years" badge
-                Mobile: Positioned inside image bounds (bottom-4 right-4)
-                Desktop: Positioned outside for dramatic effect (-bottom-6 -right-6)
-            */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.5, duration: 0.5 }}
-              className="absolute bottom-4 right-4 lg:-bottom-6 lg:-right-6 rounded-2xl p-4 lg:p-5 shadow-2xl"
-              style={{ backgroundColor: "var(--synergy-heading-highlight)" }}
-              role="img"
-              aria-label="10 plus years of trust badge"
-            >
-              <div className="text-2xl lg:text-4xl font-bold text-white">10+</div>
-              <div className="text-xs lg:text-sm text-white/80 mt-1">Years of Trust</div>
-            </motion.div>
 
             {/* Decorative border box (hidden on mobile to prevent overflow) */}
             <div

@@ -186,7 +186,7 @@ export default function AboutHero() {
               variants={fadeUp}
               className="text-blue-100/90 text-base md:text-lg lg:text-xl max-w-2xl mx-auto leading-relaxed font-light"
             >
-             fuck this Building excellence through innovation, integrity, and intelligent solutions.
+              Building excellence through innovation, integrity, and intelligent solutions.
             </motion.p>
 
             {/* ANIMATED SCROLL INDICATOR

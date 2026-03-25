@@ -242,9 +242,11 @@ export default function Navbar() {
       {/* DESKTOP + MOBILE NAV BAR
           z-50 keeps the navbar above all page content.
           CSS variables handle bg and border colour for theme compatibility.
+          fixed top-0 left-0 right-0 pins the navbar to the top of the
+          viewport so it remains visible as the user scrolls down the page.
       */}
       <nav
-        className="w-full border-b transition-colors duration-300 relative z-50"
+        className="w-full border-b transition-colors duration-300 fixed top-0 left-0 right-0 z-50"
         style={{ backgroundColor: "var(--nav-bg)", borderColor: "var(--nav-border)" }}
       >
         <div className="w-[90%] lg:w-[80%] mx-auto">
@@ -356,6 +358,12 @@ export default function Navbar() {
           </div>
         </div>
       </nav>
+
+      {/* SPACER
+          Pushes page content below the fixed navbar so nothing is
+          hidden behind it. Height matches the navbar's h-20 (80px).
+      */}
+      <div className="h-20" />
 
       {/* MOBILE SIDEBAR OVERLAY
           Rendered outside the <nav> so it can cover the full viewport.

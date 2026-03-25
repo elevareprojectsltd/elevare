@@ -97,7 +97,7 @@ export default function PrivacyPolicy() {
                 Elevare Projects Ltd ("we," "our," or "us") is committed to protecting and respecting
                 your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard
                 your information when you visit our website, use our services, or engage with us for
-                construction, architecture, project management, technology development, or Agile
+                construction, architecture, project management, technology development, or agile
                 consulting services.
               </p>
               <p
@@ -199,7 +199,7 @@ export default function PrivacyPolicy() {
               >
                 <li className="flex items-start gap-2">
                   <span className="mt-2 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: "var(--synergy-heading-highlight)" }} />
-                  <span><strong>Service Delivery:</strong> To provide construction, architecture, project management, technology development, and Agile consulting services</span>
+                  <span><strong>Service Delivery:</strong> To provide construction, architecture, project management, technology development, and agile consulting services</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="mt-2 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: "var(--synergy-heading-highlight)" }} />

@@ -111,7 +111,7 @@ const TEAM_DATA = [
     },
   },
   {
-    name: "Abiodun Oladajo ",
+    name: "Abiodun Oladoja ",
     role: "Admin / Technical Coordinator",
     image: imgTechnical,
     bio: [

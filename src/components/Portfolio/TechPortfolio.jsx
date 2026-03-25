@@ -312,7 +312,7 @@ function TechProjectCard({ project }) {
 export default function TechPortfolio() {
   return (
     <section
-      className="w-full py-16 lg:py-24 transition-colors duration-300 relative overflow-hidden"
+      className="w-full py-8 lg:py-4 transition-colors duration-300 relative overflow-hidden"
       aria-labelledby="tech-portfolio-heading"
       style={{ backgroundColor: "var(--synergy-bg)" }}
     >

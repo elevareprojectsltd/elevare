@@ -146,7 +146,7 @@ export default function HeroMediaBridge() {
   const next = () => goTo((index + 1) % SLIDES.length);
 
   return (
-    <section className="w-full bg-transparent -mt-20 md:-mt-40 lg:-mt-44">
+    <section className="w-full bg-transparent -mt-15 md:-mt-40 lg:-mt-44">
       <div className="max-w-[1200px] mx-auto px-6">
         <div className="w-full md:w-[85%] lg:w-[70%] mx-auto">
 

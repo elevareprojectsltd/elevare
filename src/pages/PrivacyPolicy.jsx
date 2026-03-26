@@ -474,11 +474,18 @@ export default function PrivacyPolicy() {
                       Email
                     </h4>
                     <a
-                      href="mailto: Elevareprojectsltd@gmail.com"
-                      className="text-sm hover:underline"
+                      href="mailto:Elevareprojectsltd@gmail.com"
+                      className="block text-sm hover:underline"
                       style={{ color: "var(--synergy-heading-highlight)" }}
                     >
                       Elevareprojectsltd@gmail.com
+                    </a>
+                    <a
+                      href="mailto:info@elevareprojectsltd.com"
+                      className="block text-sm hover:underline mt-1"
+                      style={{ color: "var(--synergy-heading-highlight)" }}
+                    >
+                      info@elevareprojectsltd.com
                     </a>
                   </div>
                 </div>

@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { FiFacebook, FiInstagram, FiLinkedin } from "react-icons/fi";
+import { FiFacebook, FiInstagram, FiLinkedin, FiMail } from "react-icons/fi";
 import { FaTiktok } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import logo from "../../assets/elevare-logo.webp";
@@ -47,6 +47,11 @@ const SOCIAL_LINKS = [
     icon: FaTiktok,
     url: "https://www.tiktok.com/@elevareprojects_?_r=1&_t=ZS-93yI7W7Vzam",
     label: "TikTok",
+  },
+  {
+    icon: FiMail,
+    url: "mailto:Elevareprojectsltd@gmail.com",
+    label: "Gmail",
   },
 ];
 
@@ -124,7 +129,7 @@ export default function Footer2({ darkMode }) {
               and Agile solutions.
             </p>
 
-            {/* Social icons */}
+            {/* Social icons — Gmail uses mailto: to open mail client */}
             <div className="flex gap-3 mt-1">
               {SOCIAL_LINKS.map(({ icon: Icon, url, label }) => (
                 <a

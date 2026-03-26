@@ -1,8 +1,8 @@
 import ContactForm from "../components/Contact/ContactForm";
 import ContactHero from "../components/Contact/ContactHero";
 import ContactInfo from "../components/Contact/ContactInfo";
-import Footer from "../components/Home/Footer";
-import ContactSection from "../components/Home/ContactSection";
+import Footer2 from "../components/Home/Footer2";
+
 
 
 
@@ -12,8 +12,7 @@ export default function Contact() {
       <ContactHero />
       <ContactInfo />
       <ContactForm/>
-      <ContactSection/>
-        <Footer/>
+        <Footer2/>
       
 
      

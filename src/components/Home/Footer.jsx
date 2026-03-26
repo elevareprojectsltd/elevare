@@ -3,6 +3,7 @@ import {
   FiFacebook,
   FiInstagram,
   FiLinkedin,
+  FiMail,
 } from "react-icons/fi";
 import { FaTiktok } from "react-icons/fa6";
 import { Link } from "react-router-dom";
@@ -91,6 +92,11 @@ export default function Footer({ darkMode }) {
       url: "https://www.tiktok.com/@elevareprojects_?_r=1&_t=ZS-93yI7W7Vzam",
       label: "Tiktok",
     },
+    {
+      icon: FiMail,
+      url: "mailto:Elevareprojectsltd@gmail.com",
+      label: "Gmail",
+    },
   ];
 
   return (
@@ -142,6 +148,7 @@ export default function Footer({ darkMode }) {
                 rel="noopener noreferrer" for security.
                 aria-label on each icon ensures screen readers
                 announce the platform name, not just an empty button.
+                Gmail uses mailto: so it opens the user's mail client.
             */}
             <div className="flex gap-4 mt-6">
               {SOCIAL_LINKS.map(({ icon: Icon, url, label }, i) => (
@@ -216,7 +223,6 @@ export default function Footer({ darkMode }) {
           <motion.div variants={fadeUp} custom={3}>
             <h4 className="font-semibold mb-4">Legal</h4>
             <ul className="space-y-3 text-sm opacity-80">
-             
               <li>
                 <Link to="/privacy" className="hover:opacity-100 transition">
                   Privacy Policy

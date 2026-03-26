@@ -53,7 +53,7 @@ export default function ContactInfo() {
       title: "Our Mail Box",
       details: [
         { text: "Elevareprojectsltd@gmail.com", link: "mailto:Elevareprojectsltd@gmail.com" },
-        { text: "\u00A0", link: null }, // Non-breaking space for spacing
+        { text: "info@elevareprojectsltd.com", link: "mailto:info@elevareprojectsltd.com" },
       ],
     },
     {

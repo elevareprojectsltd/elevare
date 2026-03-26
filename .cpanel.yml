@@ -1,5 +1,4 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/ztoergsw/public_html/elevare
-    - /bin/cp -R $CRUISE_BUILDDIR/dist/* $DEPLOYPATH
+    - export DEPLOYPATH=/home/ztoergsw/public_html/

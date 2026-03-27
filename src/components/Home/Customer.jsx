@@ -91,7 +91,7 @@ function TestimonialCard({ name, role, text }) {
       className="testimonial-card"
       aria-label={`Testimonial from ${name}, ${role}`}
     >
-      <div className="h-full flex flex-col justify-between rounded-2xl p-6 bg-[var(--synergy-card-bg)] text-[var(--synergy-card-text)] border-2 border-[var(--synergy-card-border)] shadow-lg">
+      <div className="h-full flex flex-col justify-between rounded-2xl p-5 bg-[var(--synergy-card-bg)] text-[var(--synergy-card-text)] border-2 border-[var(--synergy-card-border)] shadow-lg">
 
         {/* STAR RATING */}
         <div className="flex gap-1 mb-4 text-yellow-400 text-lg" aria-hidden="true">
@@ -99,7 +99,7 @@ function TestimonialCard({ name, role, text }) {
         </div>
 
         {/* TESTIMONIAL BODY */}
-        <p className="text-sm md:text-base leading-relaxed opacity-80 mb-6">
+        <p className="text-sm md:text-base leading-relaxed opacity-80 mb-4">
           "{text}"
         </p>
 
@@ -229,7 +229,7 @@ export default function CustomerTestimonials() {
         .testimonial-card {
           flex-shrink: 0;
           width: 300px;
-          min-height: 340px;
+          min-height: 240px;
         }
 
         @media (min-width: 640px) {

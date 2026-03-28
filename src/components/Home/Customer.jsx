@@ -1,4 +1,6 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import BelloImg from "../../assets/Bello.webp";
 import EdimoImg from "../../assets/Edimo.webp";
 import AdegboyegaImg from "../../assets/Adegboyega.webp";
@@ -6,19 +8,6 @@ import NssoImg from "../../assets/Nsso.webp";
 
 /* ===============================
    TESTIMONIALS DATA
-
-   Purpose: Single source of truth for all customer testimonial entries.
-   Each object maps directly to a <TestimonialCard /> in the sliding track.
-
-   Fields:
-   - name  : Full name of the client — displayed bold below their avatar
-   - role  : Job title and company — displayed at reduced opacity beneath name
-   - text  : The testimonial body.
-
-   HOW TO ADD A NEW TESTIMONIAL:
-   Copy any object below, update the fields, and add it to the array.
-   The slider duplicates the array automatically to create the infinite
-   loop effect — no changes needed anywhere else.
 ================================ */
 const TESTIMONIALS = [
   {
@@ -96,9 +85,114 @@ const staggerContainer = {
 };
 
 /* ===============================
+   TESTIMONIAL MODAL COMPONENT
+================================ */
+function TestimonialModal({ name, role, text, image, onClose }) {
+
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, []);
+
+  return createPortal(
+    <AnimatePresence>
+      <motion.div
+        className="fixed inset-0 z-[9999] flex items-center justify-center px-4 py-8"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.22 }}
+        style={{ backgroundColor: "rgba(0,0,0,0.7)", backdropFilter: "blur(8px)" }}
+      >
+        <div className="absolute inset-0" onClick={onClose} />
+
+        <motion.div
+          className="relative z-10 w-full max-w-md rounded-2xl overflow-hidden shadow-2xl flex flex-col"
+          style={{
+            backgroundColor: "var(--synergy-card-bg)",
+            maxHeight: "80vh",
+          }}
+          initial={{ opacity: 0, y: 40, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 40, scale: 0.96 }}
+          transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+        >
+          {/* ACCENT TOP BAR */}
+          <div
+            className="h-1.5 w-full flex-shrink-0"
+            style={{ backgroundColor: "var(--synergy-heading-highlight)" }}
+          />
+
+          {/* HEADER */}
+          <div
+            className="flex items-center gap-4 px-6 py-5 flex-shrink-0"
+            style={{ borderBottom: "1px solid var(--synergy-card-border)" }}
+          >
+            {image ? (
+              <img
+                src={image}
+                alt={`Portrait of ${name}`}
+                className="w-14 h-14 rounded-full object-cover flex-shrink-0"
+                width="56"
+                height="56"
+              />
+            ) : (
+              <div
+                className="w-14 h-14 rounded-full flex-shrink-0"
+                style={{ backgroundColor: "#000000" }}
+              />
+            )}
+            <div className="flex-1 min-w-0">
+              <p className="font-bold text-base truncate" style={{ color: "var(--synergy-card-text)" }}>
+                {name}
+              </p>
+              <p className="text-xs mt-0.5 truncate" style={{ color: "var(--synergy-card-text)", opacity: 0.6 }}>
+                {role}
+              </p>
+              <div className="flex gap-0.5 mt-1 text-yellow-400 text-sm" aria-hidden="true">
+                ★★★★★
+              </div>
+            </div>
+
+            {/* CLOSE × */}
+            <button
+              onClick={onClose}
+              className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full text-sm font-bold transition-all duration-200"
+              style={{ backgroundColor: "var(--synergy-card-border)", color: "var(--synergy-card-text)" }}
+              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--synergy-heading-highlight)"; e.currentTarget.style.color = "#fff"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "var(--synergy-card-border)"; e.currentTarget.style.color = "var(--synergy-card-text)"; }}
+              aria-label="Close modal"
+            >
+              ✕
+            </button>
+          </div>
+
+          {/* SCROLLABLE TEXT BODY */}
+          <div className="px-6 py-5 overflow-y-auto flex-1">
+            <p
+              className="text-sm md:text-base leading-relaxed"
+              style={{ color: "var(--synergy-card-text)", opacity: 0.82 }}
+            >
+              "{text}"
+            </p>
+          </div>
+
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>,
+    document.body
+  );
+}
+
+/* ===============================
    TESTIMONIAL CARD COMPONENT
 ================================ */
-function TestimonialCard({ name, role, text, image }) {
+const MAX_CHARS = 180;
+
+function TestimonialCard({ name, role, text, image, onReadMore }) {
+  const isTruncated = text.length > MAX_CHARS;
+  const displayText = isTruncated ? text.slice(0, MAX_CHARS).trimEnd() + "…" : text;
+
   return (
     <article
       className="testimonial-card"
@@ -112,13 +206,23 @@ function TestimonialCard({ name, role, text, image }) {
         </div>
 
         {/* TESTIMONIAL BODY */}
-        <p className="text-sm md:text-base leading-relaxed opacity-80 mb-4">
-          "{text}"
+        <p className="text-sm md:text-base leading-relaxed opacity-80 mb-2">
+          "{displayText}"
         </p>
+
+        {/* READ MORE — solid blue, no hover effect */}
+        {isTruncated && (
+          <button
+            onClick={onReadMore}
+            className="text-xs font-semibold mb-4 text-left"
+            style={{ color: "#1D6CE8" }}
+          >
+            Read more
+          </button>
+        )}
 
         {/* AUTHOR INFO */}
         <div className="flex items-center gap-3 mt-auto">
-          {/* Show real image if available, otherwise black placeholder */}
           {image ? (
             <img
               src={image}
@@ -150,6 +254,8 @@ function TestimonialCard({ name, role, text, image }) {
    CUSTOMER TESTIMONIALS COMPONENT
 ================================ */
 export default function CustomerTestimonials() {
+  const [activeModal, setActiveModal] = useState(null);
+
   return (
     <section
       className="relative w-full py-12 md:py-16 lg:py-20 overflow-hidden transition-colors duration-300"
@@ -203,8 +309,26 @@ export default function CustomerTestimonials() {
         </motion.div>
       </motion.div>
 
-      {/* SLIDER WRAPPER */}
-      <div className="relative w-full overflow-x-hidden">
+      {/* SLIDER WRAPPER — pauses on hover (desktop) and touch (mobile) */}
+      <div
+        className="relative w-full overflow-x-hidden"
+        onMouseEnter={(e) => {
+          const slider = e.currentTarget.querySelector(".testimonial-slider");
+          if (slider) slider.style.animationPlayState = "paused";
+        }}
+        onMouseLeave={(e) => {
+          const slider = e.currentTarget.querySelector(".testimonial-slider");
+          if (slider) slider.style.animationPlayState = "running";
+        }}
+        onTouchStart={(e) => {
+          const slider = e.currentTarget.querySelector(".testimonial-slider");
+          if (slider) slider.style.animationPlayState = "paused";
+        }}
+        onTouchEnd={(e) => {
+          const slider = e.currentTarget.querySelector(".testimonial-slider");
+          if (slider) slider.style.animationPlayState = "running";
+        }}
+      >
 
         {/* LEFT GRADIENT OVERLAY */}
         <div
@@ -230,11 +354,23 @@ export default function CustomerTestimonials() {
                 role={role}
                 text={text}
                 image={image}
+                onReadMore={() => setActiveModal({ name, role, text, image })}
               />
             ))}
           </div>
         </div>
       </div>
+
+      {/* MODAL — rendered via Portal onto document.body, outside slider overflow */}
+      {activeModal && (
+        <TestimonialModal
+          name={activeModal.name}
+          role={activeModal.role}
+          text={activeModal.text}
+          image={activeModal.image}
+          onClose={() => setActiveModal(null)}
+        />
+      )}
 
       {/* SLIDER STYLES */}
       <style>{`

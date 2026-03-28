@@ -1,4 +1,8 @@
 import { motion } from "framer-motion";
+import BelloImg from "../../assets/Bello.webp";
+import EdimoImg from "../../assets/Edimo.webp";
+import AdegboyegaImg from "../../assets/Adegboyega.webp";
+import NssoImg from "../../assets/Nsso.webp";
 
 /* ===============================
    TESTIMONIALS DATA
@@ -20,16 +24,19 @@ const TESTIMONIALS = [
   {
     name: "Bello Olanrewaju Saheed",
     role: "MEP Services Engineer / Contractor",
+    image: BelloImg,
     text: "Working with Elevare Projects Ltd has been a game-changer for our onsite execution. As MEP contractors, we often face gaps between design intent and physical installation, but their team bridges that divide perfectly. Their grasp of technical precision combined with a streamlined digital workflow ensured that our mechanical and electrical systems were integrated without a single clash. They don't just manage a project; they optimize it.",
   },
   {
     name: "Adegboyega Macaulay",
     role: "Contractor",
+    image: AdegboyegaImg,
     text: "As a specialist in glass partitions and architectural glazing, our work requires millimeter-level precision and perfect timing. Elevare Projects Ltd provided the structural oversight and technical coordination we needed to ensure our installations integrated flawlessly with the surrounding infrastructure. Their ability to manage multidisciplinary teams meant that our glass doors and partitions were installed without a single site-clash or delay.",
   },
   {
     name: "Ediomo Bassey",
     role: "Studio Lead",
+    image: EdimoImg,
     text: "Working with Elevare Projects Ltd was an exceptional experience. Their unique blend of creativity, technical expertise, and unwavering dedication is truly impressive. Throughout our collaboration, Elevare demonstrated a keen ability to design innovative, functional spaces that are as aesthetically striking as they are structurally sound. Their high level of proficiency in BIM software and digital tools ensured that every phase of the project was executed with precision. Beyond the technical side, Elevare's collaborative spirit and proactive problem-solving skills make them an invaluable partner for any multidisciplinary project. I confidently recommend Elevare Projects Ltd for any architectural or infrastructure endeavor.",
   },
   {
@@ -41,6 +48,12 @@ const TESTIMONIALS = [
     name: "Jimoh Ishaq Junior",
     role: "Sales Manager",
     text: "Elevare Projects Ltd delivers a level of quality that speaks for itself. Their ability to build beautiful, technically sound environments has been a major driver of our sales success. Partnering with Elevare means bringing a gold-standard product to market every time. They are truly an invaluable asset to our team.",
+  },
+  {
+    name: "Engr. Obong",
+    role: "Scrum Master",
+    image: NssoImg,
+    text: "Working with the team at Elevare Projects Ltd has been an exceptional experience. They bring a rare combination of strategic project management expertise and the adaptive mindset of a Scrum Master. Their ability to turn complex projects into clear, actionable processes ensures teams stay aligned, timelines are respected, and results are consistently delivered with excellence. What truly distinguishes them is their humility and people-centered leadership. They communicate with clarity, empower teams to perform at their best, and maintain transparency with stakeholders throughout every stage of a project. If you are looking for a partner who can transform vision into measurable results while maintaining discipline, agility, and integrity, Elevare Projects Ltd is a team you can trust.",
   },
 ];
 
@@ -85,7 +98,7 @@ const staggerContainer = {
 /* ===============================
    TESTIMONIAL CARD COMPONENT
 ================================ */
-function TestimonialCard({ name, role, text }) {
+function TestimonialCard({ name, role, text, image }) {
   return (
     <article
       className="testimonial-card"
@@ -105,12 +118,23 @@ function TestimonialCard({ name, role, text }) {
 
         {/* AUTHOR INFO */}
         <div className="flex items-center gap-3 mt-auto">
-          {/* Black placeholder in place of profile image */}
-          <div
-            className="w-12 h-12 rounded-full flex-shrink-0"
-            style={{ backgroundColor: "#000000" }}
-            aria-hidden="true"
-          />
+          {/* Show real image if available, otherwise black placeholder */}
+          {image ? (
+            <img
+              src={image}
+              alt={`Portrait of ${name}`}
+              className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+              width="48"
+              height="48"
+              loading="lazy"
+            />
+          ) : (
+            <div
+              className="w-12 h-12 rounded-full flex-shrink-0"
+              style={{ backgroundColor: "#000000" }}
+              aria-hidden="true"
+            />
+          )}
           <div>
             <p className="font-semibold text-sm">{name}</p>
             <p className="text-xs opacity-70">{role}</p>
@@ -199,12 +223,13 @@ export default function CustomerTestimonials() {
         {/* INFINITE SLIDING TRACK */}
         <div className="testimonial-track" role="region" aria-label="Scrolling customer testimonials">
           <div className="testimonial-slider">
-            {[...TESTIMONIALS, ...TESTIMONIALS].map(({ name, role, text }, index) => (
+            {[...TESTIMONIALS, ...TESTIMONIALS].map(({ name, role, text, image }, index) => (
               <TestimonialCard
                 key={index}
                 name={name}
                 role={role}
                 text={text}
+                image={image}
               />
             ))}
           </div>

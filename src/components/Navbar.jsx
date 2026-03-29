@@ -340,19 +340,20 @@ export default function Navbar() {
 
               {/* MOBILE HAMBURGER / CLOSE BUTTON
                   Only visible below lg breakpoint (lg:hidden).
-                  Icon swaps between FiMenu (closed) and FiX (open).
-                  Hover colour uses --nav-hover-text for consistency.
+                  Styled as a rounded square pill with three custom bars.
+                  Middle bar is shorter for a more intentional look.
+                  Background uses --nav-border so it adapts to light/dark mode.
               */}
               <motion.button
-                className="lg:hidden text-2xl transition"
-                style={{ color: "var(--text-color)" }}
+                className="lg:hidden flex items-center justify-center w-10 h-10 rounded-lg transition-colors duration-200"
+                style={{ backgroundColor: "var(--nav-border)", color: "var(--text-color)" }}
                 onClick={() => setMenuOpen(!menuOpen)}
                 aria-label="Toggle menu"
-                whileTap={{ scale: 0.9 }}
-                onMouseEnter={onHoverIn}
-                onMouseLeave={onHoverOut}
+                whileTap={{ scale: 0.92 }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--nav-hover-bg)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "var(--nav-border)"; }}
               >
-                {menuOpen ? <FiX /> : <FiMenu />}
+                <FiMenu size={20} />
               </motion.button>
             </div>
           </div>
@@ -401,22 +402,21 @@ export default function Navbar() {
             >
               <div className="flex flex-col h-full">
 
-                {/* SIDEBAR HEADER — close button only */}
+                {/* SIDEBAR HEADER — styled X close button in a rounded square */}
                 <div
                   className="flex items-center justify-end p-6 border-b"
                   style={{ borderColor: "var(--nav-border)" }}
                 >
                   <motion.button
                     onClick={() => setMenuOpen(false)}
-                    className="text-2xl transition"
-                    style={{ color: "var(--text-color)" }}
+                    className="flex items-center justify-center w-9 h-9 rounded-lg transition-colors duration-200"
+                    style={{ backgroundColor: "var(--nav-border)", color: "var(--text-color)" }}
                     aria-label="Close menu"
-                    whileHover={{ scale: 1.1, rotate: 90 }} // Rotates to form an × on hover
                     whileTap={{ scale: 0.9 }}
-                    onMouseEnter={onHoverIn}
-                    onMouseLeave={onHoverOut}
+                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--nav-hover-bg)"; e.currentTarget.style.color = "var(--nav-hover-text)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "var(--nav-border)"; e.currentTarget.style.color = "var(--text-color)"; }}
                   >
-                    <FiX />
+                    <FiX size={18} />
                   </motion.button>
                 </div>
 

@@ -1,75 +1,53 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
+import BelloImg from "../../assets/Bello.webp";
+import EdimoImg from "../../assets/Edimo.webp";
+import AdegboyegaImg from "../../assets/Adegboyega.webp";
+import NssoImg from "../../assets/Nsso.webp";
 
 /* ===============================
    TESTIMONIALS DATA
-
-   Purpose: Single source of truth for all customer testimonial entries.
-   Each object maps directly to a <TestimonialCard /> in the sliding track.
-
-   Fields:
-   - name  : Full name of the client — displayed bold below their avatar
-   - role  : Job title and company — displayed at reduced opacity beneath name
-   - image : Pexels portrait URL. Replace with real client photos when available.
-             Always use ?auto=compress&cs=tinysrgb&w=200 params for performance.
-   - text  : The testimonial body. Keep to 2–3 sentences for visual consistency.
-
-   HOW TO ADD A NEW TESTIMONIAL:
-   Copy any object below, update the fields, and add it to the array.
-   The slider duplicates the array automatically to create the infinite
-   loop effect — no changes needed anywhere else.
 ================================ */
 const TESTIMONIALS = [
   {
-    name: "Chidinma Okafor",
-    role: "Project Director, Construction Firm",
-    image: "https://images.pexels.com/photos/1181690/pexels-photo-1181690.jpeg?auto=compress&cs=tinysrgb&w=200",
-    text: "What stood out about Elevare Projects Ltd was their project management discipline. Every phase was clearly structured, timelines were respected, and communication was consistent. Their reliability gave us complete confidence in the outcome.",
+    name: "Bello Olanrewaju Saheed",
+    role: "MEP Services Engineer / Contractor",
+    image: BelloImg,
+    text: "Working with Elevare Projects Ltd has been a game-changer for our onsite execution. As MEP contractors, we often face gaps between design intent and physical installation, but their team bridges that divide perfectly. Their grasp of technical precision combined with a streamlined digital workflow ensured that our mechanical and electrical systems were integrated without a single clash. They don't just manage a project; they optimize it.",
   },
   {
-    name: "Adebayo Olawale",
-    role: "Operations Manager, Real Estate",
-    image: "https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=200",
-    text: "Elevare Projects Ltd brings reliability to a level we hadn't experienced before. Their project management blended hands-on construction expertise with agile planning tools, ensuring progress stayed on course.",
+    name: "Adegboyega Macaulay",
+    role: "Contractor",
+    image: AdegboyegaImg,
+    text: "As a specialist in glass partitions and architectural glazing, our work requires millimeter-level precision and perfect timing. Elevare Projects Ltd provided the structural oversight and technical coordination we needed to ensure our installations integrated flawlessly with the surrounding infrastructure. Their ability to manage multidisciplinary teams meant that our glass doors and partitions were installed without a single site-clash or delay.",
   },
   {
-    name: "Amina Bello",
-    role: "Development Lead, Infrastructure",
-    image: "https://images.pexels.com/photos/1181519/pexels-photo-1181519.jpeg?auto=compress&cs=tinysrgb&w=200",
-    text: "From concept to execution, Elevare Projects Ltd demonstrated exceptional project management. Their ability to coordinate teams and adapt to changes made them a dependable partner.",
+    name: "Ediomo Bassey",
+    role: "Studio Lead",
+    image: EdimoImg,
+    text: "Working with Elevare Projects Ltd was an exceptional experience. Their unique blend of creativity, technical expertise, and unwavering dedication is truly impressive. Throughout our collaboration, Elevare demonstrated a keen ability to design innovative, functional spaces that are as aesthetically striking as they are structurally sound. Their high level of proficiency in BIM software and digital tools ensured that every phase of the project was executed with precision. Beyond the technical side, Elevare's collaborative spirit and proactive problem-solving skills make them an invaluable partner for any multidisciplinary project. I confidently recommend Elevare Projects Ltd for any architectural or infrastructure endeavor.",
   },
   {
-    name: "Emeka Nwosu",
-    role: "Facilities Manager",
-    image: "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=200",
-    text: "Working with Elevare Projects Ltd felt seamless. Risks were managed early, quality remained consistent, and delivery stayed aligned with expectations throughout the project.",
+    name: "Taiwo Oluwatosin Paul",
+    role: "Creative Director, The Homelyf Interiors Ltd",
+    text: "Elevare Projects Ltd is the perfect technical partner for The Homelyf Interiors Ltd. Their proficiency in BIM and their innovative approach to functional spaces have been game-changers for our interior projects. They don't just manage a build; they help bring a creative vision to life with dedication and precision. We confidently recommend them for any architectural or interior infrastructure project.",
   },
   {
-    name: "Folake Adeyemi",
-    role: "Technology Consultant",
-    image: "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=200",
-    text: "Their hybrid approach to construction and technology stood out. Elevare Projects Ltd delivered structured execution backed by smart digital tools.",
+    name: "Jimoh Ishaq Junior",
+    role: "Sales Manager",
+    text: "Elevare Projects Ltd delivers a level of quality that speaks for itself. Their ability to build beautiful, technically sound environments has been a major driver of our sales success. Partnering with Elevare means bringing a gold-standard product to market every time. They are truly an invaluable asset to our team.",
   },
   {
-    name: "Ibrahim Musa",
-    role: "Product Owner",
-    image: "https://images.pexels.com/photos/1212984/pexels-photo-1212984.jpeg?auto=compress&cs=tinysrgb&w=200",
-    text: "Clear communication, disciplined planning, and consistent execution defined our experience. Elevare Projects Ltd exceeded expectations across every milestone.",
+    name: "Engr. Obong",
+    role: "Scrum Master",
+    image: NssoImg,
+    text: "Working with the team at Elevare Projects Ltd has been an exceptional experience. They bring a rare combination of strategic project management expertise and the adaptive mindset of a Scrum Master. Their ability to turn complex projects into clear, actionable processes ensures teams stay aligned, timelines are respected, and results are consistently delivered with excellence. What truly distinguishes them is their humility and people-centered leadership. They communicate with clarity, empower teams to perform at their best, and maintain transparency with stakeholders throughout every stage of a project. If you are looking for a partner who can transform vision into measurable results while maintaining discipline, agility, and integrity, Elevare Projects Ltd is a team you can trust.",
   },
 ];
 
 /* ===============================
    ANIMATION VARIANTS
-
-   Purpose: Define reusable animation patterns for Framer Motion.
-   These create smooth entrance effects without causing layout shifts
-   by only animating transform and opacity properties.
-
-   fadeUp          — General entrance: slides up + fades in. Used for the
-                     eyebrow label and heading so they sequence naturally.
-   scaleIn         — Decorative divider entrance: subtle scale from 90% → 100%.
-   staggerContainer — Parent wrapper that sequences child animations
-                     automatically via staggerChildren — removes the need
-                     to set individual delays on every child element.
 ================================ */
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -100,71 +78,167 @@ const staggerContainer = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.2, // Each child animates 0.2s after the previous one
-      delayChildren: 0.1,   // Wait 0.1s before starting the stagger sequence
+      staggerChildren: 0.2,
+      delayChildren: 0.1,
     },
   },
 };
 
 /* ===============================
-   TESTIMONIAL CARD COMPONENT
-
-   Renders a single testimonial as a <article> element (correct semantic
-   tag for a self-contained piece of content) containing:
-   - Five gold stars for visual trust signal
-   - Quoted testimonial body text
-   - Author avatar, name, and role
-
-   WHY <article>:
-   <article> is the correct HTML5 landmark for self-contained content
-   that could be distributed independently — a testimonial qualifies.
-   This also improves accessibility and SEO landmark structure.
-
-   WHY PEXELS IMAGES WITH ?auto=compress:
-   The compression and width params reduce image payload significantly.
-   Replace with real client photos when available — keep the same
-   URL query params for performance consistency.
+   TESTIMONIAL MODAL COMPONENT
 ================================ */
-function TestimonialCard({ name, role, image, text }) {
+function TestimonialModal({ name, role, text, image, onClose }) {
+
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, []);
+
+  return createPortal(
+    <AnimatePresence>
+      <motion.div
+        className="fixed inset-0 z-[9999] flex items-center justify-center px-4 py-8"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.22 }}
+        style={{ backgroundColor: "rgba(0,0,0,0.7)", backdropFilter: "blur(8px)" }}
+      >
+        <div className="absolute inset-0" onClick={onClose} />
+
+        <motion.div
+          className="relative z-10 w-full max-w-md rounded-2xl overflow-hidden shadow-2xl flex flex-col"
+          style={{
+            backgroundColor: "var(--synergy-card-bg)",
+            maxHeight: "80vh",
+          }}
+          initial={{ opacity: 0, y: 40, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 40, scale: 0.96 }}
+          transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+        >
+          {/* ACCENT TOP BAR */}
+          <div
+            className="h-1.5 w-full flex-shrink-0"
+            style={{ backgroundColor: "var(--synergy-heading-highlight)" }}
+          />
+
+          {/* HEADER */}
+          <div
+            className="flex items-center gap-4 px-6 py-5 flex-shrink-0"
+            style={{ borderBottom: "1px solid var(--synergy-card-border)" }}
+          >
+            {image ? (
+              <img
+                src={image}
+                alt={`Portrait of ${name}`}
+                className="w-14 h-14 rounded-full object-cover flex-shrink-0"
+                width="56"
+                height="56"
+              />
+            ) : (
+              <div
+                className="w-14 h-14 rounded-full flex-shrink-0"
+                style={{ backgroundColor: "#000000" }}
+              />
+            )}
+            <div className="flex-1 min-w-0">
+              <p className="font-bold text-base truncate" style={{ color: "var(--synergy-card-text)" }}>
+                {name}
+              </p>
+              <p className="text-xs mt-0.5 truncate" style={{ color: "var(--synergy-card-text)", opacity: 0.6 }}>
+                {role}
+              </p>
+              <div className="flex gap-0.5 mt-1 text-yellow-400 text-sm" aria-hidden="true">
+                ★★★★★
+              </div>
+            </div>
+
+            {/* CLOSE × */}
+            <button
+              onClick={onClose}
+              className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full text-sm font-bold transition-all duration-200"
+              style={{ backgroundColor: "var(--synergy-card-border)", color: "var(--synergy-card-text)" }}
+              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "var(--synergy-heading-highlight)"; e.currentTarget.style.color = "#fff"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "var(--synergy-card-border)"; e.currentTarget.style.color = "var(--synergy-card-text)"; }}
+              aria-label="Close modal"
+            >
+              ✕
+            </button>
+          </div>
+
+          {/* SCROLLABLE TEXT BODY */}
+          <div className="px-6 py-5 overflow-y-auto flex-1">
+            <p
+              className="text-sm md:text-base leading-relaxed"
+              style={{ color: "var(--synergy-card-text)", opacity: 0.82 }}
+            >
+              "{text}"
+            </p>
+          </div>
+
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>,
+    document.body
+  );
+}
+
+/* ===============================
+   TESTIMONIAL CARD COMPONENT
+================================ */
+const MAX_CHARS = 180;
+
+function TestimonialCard({ name, role, text, image, onReadMore }) {
+  const isTruncated = text.length > MAX_CHARS;
+  const displayText = isTruncated ? text.slice(0, MAX_CHARS).trimEnd() + "…" : text;
+
   return (
     <article
       className="testimonial-card"
       aria-label={`Testimonial from ${name}, ${role}`}
     >
-      <div className="h-full flex flex-col justify-between rounded-2xl p-6 bg-[var(--synergy-card-bg)] text-[var(--synergy-card-text)] border-2 border-[var(--synergy-card-border)] shadow-lg">
+      <div className="h-full flex flex-col justify-between rounded-2xl p-5 bg-[var(--synergy-card-bg)] text-[var(--synergy-card-text)] border-2 border-[var(--synergy-card-border)] shadow-lg">
 
-        {/* STAR RATING
-            Five stars rendered as text for simplicity and zero image overhead.
-            aria-hidden so screen readers don't read "★★★★★" literally.
-            The surrounding <article> aria-label provides context instead.
-        */}
+        {/* STAR RATING */}
         <div className="flex gap-1 mb-4 text-yellow-400 text-lg" aria-hidden="true">
           ★★★★★
         </div>
 
-        {/* TESTIMONIAL BODY
-            Wrapped in quotes as a typographic convention.
-            opacity-80 softens the text slightly relative to the author name
-            so the hierarchy is clear: attribution > quote body.
-        */}
-        <p className="text-sm md:text-base leading-relaxed opacity-80 mb-6">
-          "{text}"
+        {/* TESTIMONIAL BODY */}
+        <p className="text-sm md:text-base leading-relaxed opacity-80 mb-2">
+          "{displayText}"
         </p>
 
-        {/* AUTHOR INFO
-            mt-auto pushes the author block to the bottom of the card
-            regardless of quote length — keeps all cards visually aligned
-            in the slider even when testimonial text varies in length.
-        */}
+        {/* READ MORE — solid blue, no hover effect */}
+        {isTruncated && (
+          <button
+            onClick={onReadMore}
+            className="text-xs font-semibold mb-4 text-left"
+            style={{ color: "#1D6CE8" }}
+          >
+            Read more
+          </button>
+        )}
+
+        {/* AUTHOR INFO */}
         <div className="flex items-center gap-3 mt-auto">
-          <img
-            src={image}
-            alt={`Portrait of ${name}`}
-            className="w-12 h-12 rounded-full object-cover flex-shrink-0"
-            width="48"
-            height="48"
-            loading="lazy" // Defer off-screen images for performance
-          />
+          {image ? (
+            <img
+              src={image}
+              alt={`Portrait of ${name}`}
+              className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+              width="48"
+              height="48"
+              loading="lazy"
+            />
+          ) : (
+            <div
+              className="w-12 h-12 rounded-full flex-shrink-0"
+              style={{ backgroundColor: "#000000" }}
+              aria-hidden="true"
+            />
+          )}
           <div>
             <p className="font-semibold text-sm">{name}</p>
             <p className="text-xs opacity-70">{role}</p>
@@ -178,23 +252,10 @@ function TestimonialCard({ name, role, image, text }) {
 
 /* ===============================
    CUSTOMER TESTIMONIALS COMPONENT
-
-   Displays the full auto-scrolling testimonials section with:
-   - Staggered section header: eyebrow label → heading → divider
-   - Infinite CSS marquee slider (no JavaScript scroll logic needed)
-   - Left/right gradient overlays that fade cards in/out at the edges
-   - Duplicated testimonial array to create a seamless infinite loop
-   - Fully theme-aware via CSS variables (--synergy-bg, --synergy-card-*)
-   - Accessible: <article> cards, descriptive alt text, aria-label on section
-
-   HOW THE INFINITE SLIDER WORKS:
-   The TESTIMONIALS array is spread twice: [...TESTIMONIALS, ...TESTIMONIALS]
-   This creates a track that is exactly 2× the content width. The CSS
-   @keyframes animation translates the track by -50% (back to the start
-   of the second copy), then instantly resets to 0 — creating a seamless
-   infinite loop with pure CSS and zero JavaScript scroll logic.
 ================================ */
 export default function CustomerTestimonials() {
+  const [activeModal, setActiveModal] = useState(null);
+
   return (
     <section
       className="relative w-full py-12 md:py-16 lg:py-20 overflow-hidden transition-colors duration-300"
@@ -202,23 +263,13 @@ export default function CustomerTestimonials() {
       style={{ backgroundColor: "var(--synergy-bg)", color: "var(--synergy-text)" }}
     >
 
-      {/* DECORATIVE BACKGROUND ELEMENTS
-
-          Subtle blur circles add depth without distracting from the
-          testimonial content. Positioned at section edges and clipped
-          by overflow-hidden on the parent <section>.
-      */}
+      {/* DECORATIVE BACKGROUND ELEMENTS */}
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none" aria-hidden="true">
         <div className="absolute top-1/4 left-10 w-32 h-32 rounded-full bg-blue-500/5 blur-3xl" />
         <div className="absolute bottom-1/4 right-10 w-40 h-40 rounded-full bg-blue-400/5 blur-3xl" />
       </div>
 
-      {/* SECTION HEADER
-
-          staggerContainer sequences the eyebrow label, heading, and
-          divider automatically — no individual delay props needed.
-          amount: 0.3 triggers animation once 30% of the header is visible.
-      */}
+      {/* SECTION HEADER */}
       <motion.div
         variants={staggerContainer}
         initial="hidden"
@@ -236,9 +287,7 @@ export default function CustomerTestimonials() {
           </span>
         </motion.div>
 
-        {/* MAIN HEADING
-            id ties to aria-labelledby on the parent <section>.
-        */}
+        {/* MAIN HEADING */}
         <motion.h2
           variants={fadeUp}
           id="testimonials-heading"
@@ -248,7 +297,7 @@ export default function CustomerTestimonials() {
           Customer Testimonials
         </motion.h2>
 
-        {/* DECORATIVE DIVIDER — mirrors the —•— pattern used site-wide */}
+        {/* DECORATIVE DIVIDER */}
         <motion.div
           variants={scaleIn}
           className="flex items-center justify-center gap-2 mt-6"
@@ -260,83 +309,77 @@ export default function CustomerTestimonials() {
         </motion.div>
       </motion.div>
 
-      {/* SLIDER WRAPPER
+      {/* SLIDER WRAPPER — pauses on hover (desktop) and touch (mobile) */}
+      <div
+        className="relative w-full overflow-x-hidden"
+        onMouseEnter={(e) => {
+          const slider = e.currentTarget.querySelector(".testimonial-slider");
+          if (slider) slider.style.animationPlayState = "paused";
+        }}
+        onMouseLeave={(e) => {
+          const slider = e.currentTarget.querySelector(".testimonial-slider");
+          if (slider) slider.style.animationPlayState = "running";
+        }}
+        onTouchStart={(e) => {
+          const slider = e.currentTarget.querySelector(".testimonial-slider");
+          if (slider) slider.style.animationPlayState = "paused";
+        }}
+        onTouchEnd={(e) => {
+          const slider = e.currentTarget.querySelector(".testimonial-slider");
+          if (slider) slider.style.animationPlayState = "running";
+        }}
+      >
 
-          overflow-x-hidden clips the cards that are sliding outside
-          the visible area. The gradient overlays are positioned inside
-          this wrapper so they sit directly over the card edges.
-      */}
-      <div className="relative w-full overflow-x-hidden">
-
-        {/* LEFT GRADIENT OVERLAY
-            Fades cards out as they approach the left edge, creating the
-            illusion that cards emerge from behind the section boundary.
-            hidden on mobile (sm:block) as the fade effect isn't needed
-            on narrow screens where cards fill most of the viewport width.
-        */}
+        {/* LEFT GRADIENT OVERLAY */}
         <div
           className="absolute left-0 top-0 bottom-0 w-16 md:w-32 z-10 pointer-events-none hidden sm:block"
           style={{ background: "linear-gradient(to right, var(--synergy-bg), transparent)" }}
           aria-hidden="true"
         />
 
-        {/* RIGHT GRADIENT OVERLAY — mirrors the left overlay */}
+        {/* RIGHT GRADIENT OVERLAY */}
         <div
           className="absolute right-0 top-0 bottom-0 w-16 md:w-32 z-10 pointer-events-none hidden sm:block"
           style={{ background: "linear-gradient(to left, var(--synergy-bg), transparent)" }}
           aria-hidden="true"
         />
 
-        {/* INFINITE SLIDING TRACK
-
-            HOW IT WORKS:
-            The TESTIMONIALS array is duplicated: [...TESTIMONIALS, ...TESTIMONIALS]
-            This creates a track that is exactly 2× the real content width.
-            The CSS animation slides the track left by -50% (the exact width
-            of the first copy), then snaps back to 0 — making the loop seamless.
-
-            WHY CSS ANIMATION (not JS):
-            Pure CSS @keyframes runs on the GPU compositor thread, meaning
-            it never blocks the main thread or causes layout shifts. This
-            approach scores better on Core Web Vitals than JS-driven sliders.
-        */}
+        {/* INFINITE SLIDING TRACK */}
         <div className="testimonial-track" role="region" aria-label="Scrolling customer testimonials">
           <div className="testimonial-slider">
-            {[...TESTIMONIALS, ...TESTIMONIALS].map(({ name, role, image, text }, index) => (
+            {[...TESTIMONIALS, ...TESTIMONIALS].map(({ name, role, text, image }, index) => (
               <TestimonialCard
                 key={index}
                 name={name}
                 role={role}
-                image={image}
                 text={text}
+                image={image}
+                onReadMore={() => setActiveModal({ name, role, text, image })}
               />
             ))}
           </div>
         </div>
       </div>
 
-      {/* SLIDER STYLES
+      {/* MODAL — rendered via Portal onto document.body, outside slider overflow */}
+      {activeModal && (
+        <TestimonialModal
+          name={activeModal.name}
+          role={activeModal.role}
+          text={activeModal.text}
+          image={activeModal.image}
+          onClose={() => setActiveModal(null)}
+        />
+      )}
 
-          Scoped inside the component via a <style> tag so these rules
-          don't leak into the global stylesheet and conflict with other
-          components that might use similar class names.
-
-          WHY NOT TAILWIND FOR THE ANIMATION:
-          Tailwind can't express custom @keyframes or animation: values
-          without modifying tailwind.config.js. The <style> tag keeps
-          this self-contained and portable — drop the component anywhere
-          and it works without config changes.
-      */}
+      {/* SLIDER STYLES */}
       <style>{`
-        /* Track: full-width container that clips overflow */
         .testimonial-track {
           width: 100%;
           overflow: hidden;
           position: relative;
         }
 
-        /* Slider: flex row wider than the viewport (max-content),
-           animated to scroll continuously to the left */
         .testimonial-slider {
           display: flex;
           gap: 1.5rem;
@@ -344,15 +387,12 @@ export default function CustomerTestimonials() {
           animation: testimonial-slide 45s linear infinite;
         }
 
-        /* Individual card: fixed width, fixed min-height so all
-           cards are the same height regardless of quote length */
         .testimonial-card {
           flex-shrink: 0;
           width: 300px;
-          min-height: 340px;
+          min-height: 240px;
         }
 
-        /* Responsive card widths */
         @media (min-width: 640px) {
           .testimonial-card { width: 340px; }
         }
@@ -362,16 +402,11 @@ export default function CustomerTestimonials() {
           .testimonial-slider { gap: 2rem; }
         }
 
-        /* Core animation: translates the track left by exactly 50%
-           (the width of one full set of testimonials) then snaps
-           back to 0 to create a seamless infinite loop */
         @keyframes testimonial-slide {
           0%   { transform: translateX(0); }
           100% { transform: translateX(-50%); }
         }
 
-        /* Pause the animation when the user prefers reduced motion —
-           respects accessibility preferences for vestibular disorders */
         @media (prefers-reduced-motion: reduce) {
           .testimonial-slider {
             animation: none;

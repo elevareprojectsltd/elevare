@@ -111,7 +111,7 @@ const TEAM_DATA = [
     },
   },
   {
-    name: "Abiodun Oladajo ",
+    name: "Abiodun Oladoja ",
     role: "Admin / Technical Coordinator",
     image: imgTechnical,
     bio: [
@@ -411,7 +411,7 @@ export default function TeamSection() {
             Elevare Projects Ltd prides itself on competent leadership. Our team
             stands at the forefront of delivering excellence in{" "}
             <strong>Construction, Project Management </strong> and{" "}
-            <strong>Digital solutions.</strong>.
+            <strong>Digital solutions.</strong>
           </p>
         </motion.div>
 

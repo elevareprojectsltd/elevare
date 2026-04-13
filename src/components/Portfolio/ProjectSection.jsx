@@ -229,7 +229,7 @@ const PROJECTS = [
       "Strong project management at every stage",
       "Homes built for comfort, durability and long-term value",
     ],
-    images: [R1, R2, R3, R4, R5, R6, R7],
+    images: [R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12, R13, R14],
   },
   {
     id: 7,
@@ -248,7 +248,7 @@ const PROJECTS = [
       "Future-ready, flexible workplace solutions",
       "Delivered on time to the highest quality standards",
     ],
-    images: [R8, R9, R10, R11, R12, R13, R14],
+    images: [],
   },
 ];
 

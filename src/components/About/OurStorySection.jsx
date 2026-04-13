@@ -147,13 +147,13 @@ export default function OurStorySection() {
           Our Story
         </motion.p>
 
-        {/* HEADING */}
+        {/* HEADING — split into two lines only on sm+ to avoid merge on mobile */}
         <motion.h2
           variants={fadeUp}
           className="text-3xl md:text-4xl lg:text-5xl font-semibold leading-[1.2] tracking-tight mb-10"
           style={{ color: "var(--synergy-heading-main)" }}
         >
-          Where Structural Integrity
+          Where Structural Integrity{" "}
           <br className="hidden sm:block" />
           Meets Digital Intelligence.
         </motion.h2>
@@ -217,8 +217,6 @@ export default function OurStorySection() {
 
         {/* ── MISSION / VISION / VALUE — FADE SWAP ── */}
         <CyclingCards />
-
-
 
       </div>
     </motion.section>
